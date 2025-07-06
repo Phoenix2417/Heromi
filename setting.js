@@ -10,7 +10,48 @@ function getSettingText(key) {
 function renderAccountSetting() {
     const section = document.getElementById('section-setting');
     if (!window.currentUser) {
-        section.innerHTML = `<div style="color:#ee5a24;font-weight:bold;">${getSettingText('setting_login_required') || 'Vui lòng đăng nhập để sử dụng chức năng cài đặt tài khoản.'}</div>`;
+        // Hiển thị các tính năng cơ bản cho khách (chưa đăng nhập)
+        section.innerHTML = `
+        <h2>${getSettingText('setting_title') || 'Cài đặt tài khoản'}</h2>
+        <div style="margin-bottom:18px;color:#fff;">
+            <b>🌐 ${getSettingText('sidebar_setting') || 'Cài đặt'}</b><br>
+            <label for="langSelect" style="margin-top:10px;display:inline-block;">Chọn ngôn ngữ:</label>
+            <select id="settingLangSelect" style="margin-left:8px;padding:4px 10px;border-radius:6px;">
+                <option value="vi">🇻🇳 Tiếng Việt</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="ko">🇰🇷 한국어</option>
+            </select>
+        </div>
+        <div style="margin-bottom:18px;">
+            <b>❓ Hướng dẫn sử dụng:</b>
+            <ul style="margin:8px 0 0 18px;font-size:15px;">
+                <li>Đăng ký tài khoản để sử dụng đầy đủ các tính năng.</li>
+                <li>Có thể đổi ngôn ngữ giao diện tại đây.</li>
+                <li>Liên hệ hỗ trợ nếu cần trợ giúp.</li>
+            </ul>
+        </div>
+        <div style="margin-bottom:18px;">
+            <b>ℹ️ Thông tin hệ thống:</b>
+            <ul style="margin:8px 0 0 18px;font-size:15px;">
+                <li>Phiên bản: 1.0.0</li>
+                <li>Nhà phát triển: Heromi Team</li>
+                <li>Email hỗ trợ: <a href="mailto:nvhuyhoang24107@gmail.com" style="color:#00d4ff;">nvhuyhoang24107@gmail.com</a></li>
+            </ul>
+        </div>
+        <div style="color:#ee5a24;font-size:14px;margin-top:18px;">
+            ${getSettingText('setting_login_required') || 'Vui lòng đăng nhập để sử dụng chức năng cài đặt tài khoản.'}
+        </div>
+        `;
+        // Gắn sự kiện đổi ngôn ngữ cho select riêng trong setting
+        const langSelect = document.getElementById('settingLangSelect');
+        if (langSelect) {
+            langSelect.value = window.currentLang || 'vi';
+            langSelect.onchange = function() {
+                if (window.setLang) window.setLang(this.value);
+            };
+        }
         return;
     }
     // Thông tin cá nhân
