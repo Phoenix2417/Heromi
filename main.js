@@ -131,12 +131,13 @@ registerBtn.onclick = function(e) {
 };
 
 // Đăng nhập
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
     const role = document.getElementById('loginRole').value;
     const errorDiv = document.getElementById('loginError');
+
     // Nếu đăng nhập là admin thì chỉ cho phép đúng tài khoản admin, không cần chọn chức vụ
     if (username === 'admin') {
         const user = users.find(u => u.username === 'admin' && u.password === password && u.role === 'Admin');
@@ -149,7 +150,22 @@ function handleLogin(event) {
         }
         return false;
     }
-    // Người dùng thường
+
+    // Đăng nhập với Firebase nếu có hàm
+    if (typeof signInWithEmailAndPassword === "function") {
+        // Tìm email theo username nếu có
+        let email = username;
+        const userObj = users.find(u => u.username === username && u.role === role);
+        if (userObj && userObj.email) email = userObj.email;
+        const result = await firebaseLogin(email, password);
+        if (!result.success) {
+            errorDiv.textContent = result.error || 'Đăng nhập thất bại!';
+            return false;
+        }
+        // Có thể lấy thêm thông tin user từ Firestore nếu muốn
+    }
+
+    // Người dùng thường (local)
     const user = users.find(u => u.username === username && u.password === password && u.role === role && u.role !== 'Admin');
     if (user) {
         currentUser = user;
@@ -160,8 +176,47 @@ function handleLogin(event) {
     }
     return false;
 }
+
+// Thêm import Firebase (chỉ dùng khi chạy với bundler hoặc module, nếu dùng CDN thì bỏ qua dòng này)
+// import { signInWithEmailAndPassword } from "firebase/auth";
+
+// Hàm đăng nhập với Firebase Auth
+async function firebaseLogin(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("Đăng nhập thành công", user.email);
+        return { success: true, user };
+    } catch (error) {
+        console.error(error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+// Thêm import Firebase (chỉ dùng khi chạy với bundler hoặc module, nếu dùng CDN thì bỏ qua dòng này)
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { setDoc, doc } from "firebase/firestore";
+
+// Hàm đăng ký tài khoản với Firebase Auth + Firestore
+async function firebaseRegister(email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        // Lưu thêm dữ liệu vào Firestore
+        await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            createdAt: new Date()
+        });
+        console.log("Đăng ký thành công");
+        return { success: true, user };
+    } catch (error) {
+        console.error(error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 // Đăng ký
-function handleRegister(event) {
+async function handleRegister(event) {
     event.preventDefault();
     const username = document.getElementById('registerUsername').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
@@ -185,6 +240,17 @@ function handleRegister(event) {
         errorDiv.textContent = 'Tên đăng nhập đã tồn tại cho chức vụ này!';
         return false;
     }
+
+    // Đăng ký với Firebase
+    if (typeof createUserWithEmailAndPassword === "function") {
+        const result = await firebaseRegister(email, password);
+        if (!result.success) {
+            errorDiv.textContent = result.error || 'Đăng ký thất bại!';
+            return false;
+        }
+        // Có thể lưu thêm thông tin username, role vào Firestore nếu muốn
+    }
+
     users.push({ username, password, email, role });
     errorDiv.textContent = '';
     alert('Đăng ký thành công! Vui lòng đăng nhập.');
