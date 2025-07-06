@@ -954,6 +954,9 @@ body {
     .dashboard-grid {
         gap: 18px;
     }
+    .section-content {
+        padding: 18px 8px 14px 8px;
+    }
 }
 @media (max-width: 768px) {
     .container {
@@ -984,6 +987,7 @@ body {
         margin-right: 10px;
         padding-left: 0;
         justify-content: center;
+        font-size: 18px;
     }
     .sidebar:hover .nav-item {
         width: 120px;
@@ -1010,6 +1014,14 @@ body {
         grid-template-columns: 1fr;
         gap: 16px;
     }
+    .section-content {
+        padding: 18px 8px 14px 8px;
+        min-height: 200px;
+    }
+    .popup {
+        min-width: 90vw;
+        padding: 18px 8px 14px 8px;
+    }
 }
 @media (max-width: 480px) {
     .main-content {
@@ -1019,39 +1031,50 @@ body {
         padding: 8px 2vw;
     }
     .popup {
-        min-width: 90vw;
-        padding: 18px 8px 14px 8px;
+        min-width: 98vw;
+        padding: 10px 2vw 10px 2vw;
+        font-size: 15px;
+    }
+    .dashboard-grid {
+        gap: 10px;
+    }
+    .section-content {
+        padding: 10px 2vw 10px 2vw;
+        min-height: 120px;
+        font-size: 15px;
+    }
+    .btn, .btn-primary, .btn-secondary {
+        padding: 8px 10px;
+        font-size: 15px;
+        border-radius: 18px;
+    }
+    .card {
+        padding: 18px 8px 18px 8px;
+        min-width: 0;
+    }
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    .card h3 {
+        font-size: 16px;
+    }
+    .card p {
+        font-size: 13px;
+    }
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    .user-fullname, .user-history {
+        font-size: 12px;
     }
 }
-.section-content {
-    background: rgba(255,255,255,0.08);
-    border-radius: 18px;
-    padding: 32px 28px 24px 28px;
-    margin-bottom: 30px;
-    color: #fff;
-    box-shadow: 0 4px 24px rgba(30,60,114,0.10);
-    min-height: 300px;
-    animation: popupIn 0.3s;
-}
-.section-content h2 {
-    color: #00d4ff;
-    font-size: 22px;
-    margin-bottom: 18px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-@media (max-width: 480px) {
-    .main-content {
-        padding: 5px 2vw;
-    }
-    .header {
-        padding: 8px 2vw;
-    }
-    .popup {
-        min-width: 90vw;
-        padding: 18px 8px 14px 8px;
-    }
-}
+
+/* --- End responsive improvements --- */
 .section-content {
     background: rgba(255,255,255,0.08);
     border-radius: 18px;
