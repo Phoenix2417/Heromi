@@ -277,5 +277,28 @@
         showSection('');
         </script>
     </div>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBN6H7g8MlpaabYFu88miVqigqyRDNhcx8",
+        authDomain: "heromi-77650.firebaseapp.com",
+        projectId: "heromi-77650",
+        storageBucket: "heromi-77650.firebasestorage.app",
+        messagingSenderId: "80819533386",
+        appId: "1:80819533386:web:102d1a45ae711fb49358b3",
+        measurementId: "G-YMEPRBQ164"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
 </body>
 </html>
