@@ -183,12 +183,24 @@ async function handleLogin(event) {
 // Hàm đăng nhập với Firebase Auth
 async function firebaseLogin(email, password) {
     try {
+        // Đăng nhập với Auth
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+        // Đọc thông tin từ Realtime Database nếu có hàm get/child/ref
+        if (typeof get === "function" && typeof child === "function" && typeof ref === "function" && typeof db !== "undefined" && db.constructor.name === "Database") {
+            const userRef = ref(db);
+            const snapshot = await get(child(userRef, `users/${user.uid}`));
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                console.log("Thông tin người dùng:", userData);
+            } else {
+                console.log("Không tìm thấy dữ liệu người dùng");
+            }
+        }
         console.log("Đăng nhập thành công", user.email);
         return { success: true, user };
     } catch (error) {
-        console.error(error.message);
+        console.error("Lỗi đăng nhập:", error.message);
         return { success: false, error: error.message };
     }
 }
@@ -197,20 +209,32 @@ async function firebaseLogin(email, password) {
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 // import { setDoc, doc } from "firebase/firestore";
 
-// Hàm đăng ký tài khoản với Firebase Auth + Firestore
-async function firebaseRegister(email, password) {
+// Hàm đăng ký tài khoản với Firebase Auth + Firestore + Realtime Database
+async function firebaseRegister(email, password, role = "user") {
     try {
+        // Đăng ký với Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        // Lưu thêm dữ liệu vào Firestore
-        await setDoc(doc(db, "users", user.uid), {
-            email: user.email,
-            createdAt: new Date()
-        });
+        // Lưu thêm dữ liệu vào Firestore (nếu muốn)
+        if (typeof setDoc === "function" && typeof doc === "function" && typeof db !== "undefined" && db.constructor.name !== "Database") {
+            await setDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                createdAt: new Date(),
+                role: role
+            });
+        }
+        // Lưu vào Realtime Database nếu có hàm set/ref
+        if (typeof set === "function" && typeof ref === "function" && typeof db !== "undefined" && db.constructor.name === "Database") {
+            await set(ref(db, 'users/' + user.uid), {
+                email: user.email,
+                createdAt: new Date().toISOString(),
+                role: role
+            });
+        }
         console.log("Đăng ký thành công");
         return { success: true, user };
     } catch (error) {
-        console.error(error.message);
+        console.error("Lỗi đăng ký:", error.message);
         return { success: false, error: error.message };
     }
 }
@@ -241,14 +265,14 @@ async function handleRegister(event) {
         return false;
     }
 
-    // Đăng ký với Firebase
+    // Đăng ký với Firebase (ưu tiên lưu cả vào Realtime Database nếu có)
     if (typeof createUserWithEmailAndPassword === "function") {
-        const result = await firebaseRegister(email, password);
+        const result = await firebaseRegister(email, password, role);
         if (!result.success) {
             errorDiv.textContent = result.error || 'Đăng ký thất bại!';
             return false;
         }
-        // Có thể lưu thêm thông tin username, role vào Firestore nếu muốn
+        // Có thể lưu thêm thông tin username, role vào Firestore hoặc Realtime Database nếu muốn
     }
 
     users.push({ username, password, email, role });
