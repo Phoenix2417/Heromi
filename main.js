@@ -5,11 +5,11 @@ function navigateToSection(section) {
         event.target.closest('.card').style.transform = '';
     }, 150);
     
-    // Thông báo điều hướng
-    //alert(`Đang chuyển đến: ${section}`);
+    // Đã loại bỏ thông báo popup khi điều hướng
+    // alert(`Đang chuyển đến: ${section}`);
     
     // Ở đây bạn có thể thêm logic điều hướng thực tế
-    // window.location.href = `/${section}`;
+    //window.location.href = `/${section}`;
 }
 
 function openSupport() {
@@ -475,6 +475,7 @@ const translations = {
         setting_achievements: "Thành tựu",
         setting_logout: "Đăng xuất",
         setting_delete: "Yêu cầu xóa tài khoản",
+        back_home: "← Trở về trang chủ",
     },
     en: {
         login: "Login",
@@ -559,6 +560,7 @@ const translations = {
         setting_achievements: "Achievements",
         setting_logout: "Logout",
         setting_delete: "Request account deletion",
+        back_home: "← Back to Home",
     },
     zh: {
         login: "登录",
@@ -643,6 +645,7 @@ const translations = {
         setting_achievements: "成就",
         setting_logout: "登出",
         setting_delete: "请求删除账户",
+        back_home: "← 返回主页",
     },
     ja: {
         login: "ログイン",
@@ -727,6 +730,7 @@ const translations = {
         setting_achievements: "業績",
         setting_logout: "ログアウト",
         setting_delete: "アカウント削除をリクエスト",
+        back_home: "← ホームに戻る",
     },
     ko: {
         login: "로그인",
@@ -811,6 +815,7 @@ const translations = {
         setting_achievements: "업적",
         setting_logout: "로그아웃",
         setting_delete: "계정 삭제 요청",
+        back_home: "← 홈으로 돌아가기",
     }
 };
 
@@ -826,6 +831,10 @@ function applyI18n() {
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (t[key]) el.setAttribute('placeholder', t[key]);
+    });
+    // Đổi text cho nút trở về trang chủ
+    document.querySelectorAll('.back-home-btn').forEach(btn => {
+        btn.textContent = t.back_home;
     });
 }
 
