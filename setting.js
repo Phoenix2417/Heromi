@@ -94,51 +94,101 @@ function renderAccountSetting() {
 
     // Nếu đã đăng nhập
     const user = window.currentUser;
-    let isTeacher = user.role === 'teacher';
-    let isStudent = user.role === 'student';
-    let history = user.history || [];
-    let countBT = 0, countDT = 0;
-    let achievements = [];
-    if (isTeacher) {
-        // Đếm số bài tập và đề thi đã tạo (demo: dựa vào chuỗi)
-        countBT = history.filter(h => h.startsWith('Tạo bài tập')).length;
-        countDT = history.filter(h => h.startsWith('Tạo đề thi')).length;
-        if (countBT + countDT >= 5) achievements.push('🌟 Giáo viên năng động');
-        if (countBT + countDT >= 10) achievements.push('🏆 Giáo viên xuất sắc');
-        if (countBT > 0 && countDT > 0) achievements.push('🧑‍🏫 Đa năng');
+    const isTeacher = user.role === 'Giáo viên';
+    const isStudent = user.role === 'Học sinh';
+
+    // Lấy lịch sử hoạt động (demo)
+    let history = [];
+    if (window.userHistories && window.userHistories[user.username]) {
+        history = window.userHistories[user.username].history || [];
     }
+
+    // Phân loại lịch sử
+    let solvedExercises = [], solvedExams = [], uploadedExercises = [], uploadedExams = [];
     if (isStudent) {
-        // Đếm số bài tập và đề thi đã làm (demo: dựa vào chuỗi)
-        countBT = history.filter(h => h.startsWith('Làm bài')).length;
-        countDT = history.filter(h => h.startsWith('Làm đề thi')).length;
-        if (countBT + countDT >= 5) achievements.push('🌟 Học sinh chăm chỉ');
-        if (countBT + countDT >= 10) achievements.push('🏆 Học sinh xuất sắc');
-        if (countBT > 0 && countDT > 0) achievements.push('🎯 Đa tài');
+        solvedExercises = history.filter(h => h.startsWith('Làm bài'));
+        solvedExams = history.filter(h => h.startsWith('Làm đề thi'));
     }
-    // Giao diện
+    if (isTeacher) {
+        uploadedExercises = history.filter(h => h.startsWith('Tạo bài tập'));
+        uploadedExams = history.filter(h => h.startsWith('Tạo đề thi'));
+    }
+
+    // Thành tựu
+    let achievements = [];
+    const total = solvedExercises.length + solvedExams.length + uploadedExercises.length + uploadedExams.length;
+    if (isStudent) {
+        if (total >= 5) achievements.push('🌟 Học sinh chăm chỉ');
+        if (total >= 10) achievements.push('🏆 Học sinh xuất sắc');
+        if (solvedExercises.length > 0 && solvedExams.length > 0) achievements.push('🎯 Đa tài');
+    }
+    if (isTeacher) {
+        if (total >= 5) achievements.push('🌟 Giáo viên năng động');
+        if (total >= 10) achievements.push('🏆 Giáo viên xuất sắc');
+        if (uploadedExercises.length > 0 && uploadedExams.length > 0) achievements.push('🧑‍🏫 Đa năng');
+    }
+
+    // Dữ liệu demo cho biểu đồ hoạt động (theo ngày)
+    // { '2024-06-01': 2, '2024-06-02': 1, ... }
+    let activityData = {};
+    history.forEach(h => {
+        // Lấy ngày từ chuỗi, ví dụ: 'Làm bài: Toán lớp 6 - 02/06/2024'
+        const dateMatch = h.match(/(\d{2}\/\d{2}\/\d{4})$/);
+        if (dateMatch) {
+            const [d, m, y] = dateMatch[1].split('/');
+            const iso = `${y}-${m}-${d}`;
+            activityData[iso] = (activityData[iso] || 0) + 1;
+        }
+    });
+    // Lấy 7 ngày gần nhất
+    const days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const iso = d.toISOString().slice(0, 10);
+        days.push(iso);
+    }
+    const chartData = days.map(day => activityData[day] || 0);
+
     section.innerHTML = `
     <h2>${getSettingText('setting_title') || 'Cài đặt tài khoản'}</h2>
-    <form id="settingProfileForm" style="margin-bottom:24px;">
-        <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
-            <img id="settingAvatarPreview" src="${user.avatar ? user.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username)}" alt="avatar" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #00d4ff;">
-            <div>
-                <label for="settingAvatar">${getSettingText('setting_avatar') || 'Ảnh đại diện'}</label>
-                <input type="file" id="settingAvatar" accept="image/*" style="margin-top:4px;">
-            </div>
-        </div>
-        <label for="settingFullname">${getSettingText('setting_fullname') || 'Họ tên'}</label>
-        <input type="text" id="settingFullname" value="${user.fullname || ''}" placeholder="${getSettingText('setting_fullname_placeholder') || 'Nhập họ tên'}">
-        <label for="settingEmail">${getSettingText('setting_email') || 'Email'}</label>
-        <input type="email" id="settingEmail" value="${user.email || ''}" placeholder="${getSettingText('setting_email_placeholder') || 'Nhập email'}">
-        <button class="btn btn-primary" type="submit" style="margin-top:10px;">${getSettingText('setting_update_btn') || 'Cập nhật thông tin'}</button>
-        <div id="settingProfileMsg" style="margin-top:8px;font-size:13px;"></div>
-    </form>
     <div style="margin-bottom:18px;">
         <b>${getSettingText('setting_role') || 'Chức vụ'}:</b> ${user.role}
         <br>
-        ${isTeacher ? `<b>${getSettingText('setting_created_ex') || 'Số bài tập đã tạo'}:</b> ${countBT} <br><b>${getSettingText('setting_created_exam') || 'Số đề thi đã tạo'}:</b> ${countDT}` : ''}
-        ${isStudent ? `<b>${getSettingText('setting_done_ex') || 'Số bài tập đã làm'}:</b> ${countBT} <br><b>${getSettingText('setting_done_exam') || 'Số đề thi đã làm'}:</b> ${countDT}` : ''}
-        ${achievements.length ? `<div style="margin-top:8px;"><b>${getSettingText('setting_achievements') || 'Thành tựu'}:</b> ${achievements.join(' , ')}</div>` : ''}
+        <b>${getSettingText('setting_email') || 'Email'}:</b> ${user.email || ''}
+    </div>
+    <div style="margin-bottom:24px;">
+        <b>Thành tựu:</b>
+        <div style="margin-top:8px;">${achievements.length ? achievements.join(' , ') : 'Chưa có thành tựu'}</div>
+    </div>
+    ${isStudent ? `
+    <div style="margin-bottom:24px;">
+        <b>Đề thi đã giải:</b>
+        <ul style="margin:8px 0 0 18px;">
+            ${solvedExams.length ? solvedExams.map(e => `<li>${e}</li>`).join('') : '<li>Chưa có</li>'}
+        </ul>
+        <b>Bài tập đã giải:</b>
+        <ul style="margin:8px 0 0 18px;">
+            ${solvedExercises.length ? solvedExercises.map(e => `<li>${e}</li>`).join('') : '<li>Chưa có</li>'}
+        </ul>
+    </div>
+    ` : ''}
+    ${isTeacher ? `
+    <div style="margin-bottom:24px;">
+        <b>Đề thi đã tải lên:</b>
+        <ul style="margin:8px 0 0 18px;">
+            ${uploadedExams.length ? uploadedExams.map(e => `<li>${e}</li>`).join('') : '<li>Chưa có</li>'}
+        </ul>
+        <b>Bài tập đã tải lên:</b>
+        <ul style="margin:8px 0 0 18px;">
+            ${uploadedExercises.length ? uploadedExercises.map(e => `<li>${e}</li>`).join('') : '<li>Chưa có</li>'}
+        </ul>
+    </div>
+    ` : ''}
+    <div style="margin-bottom:24px;">
+        <b>Biểu đồ hoạt động 7 ngày gần nhất:</b>
+        <canvas id="activityChart" width="420" height="180" style="background:#fff;border-radius:12px;margin-top:10px;max-width:100%;"></canvas>
     </div>
     <div style="margin-bottom:18px;">
         <button class="btn btn-secondary" id="settingLogoutBtn">${getSettingText('setting_logout') || 'Đăng xuất'}</button>
@@ -146,42 +196,45 @@ function renderAccountSetting() {
     </div>
     <div id="settingDeleteMsg" style="font-size:13px;color:#ee5a24;"></div>
     `;
-    // Sự kiện cập nhật thông tin cá nhân
-    document.getElementById('settingProfileForm').onsubmit = function(e) {
-        e.preventDefault();
-        const fullname = document.getElementById('settingFullname').value.trim();
-        const email = document.getElementById('settingEmail').value.trim();
-        user.fullname = fullname;
-        user.email = email;
-        document.getElementById('settingProfileMsg').textContent = 'Cập nhật thành công!';
-        if (typeof showUserProfile === 'function') showUserProfile();
-    };
-    // Sự kiện upload avatar
-    document.getElementById('settingAvatar').onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            document.getElementById('settingAvatarPreview').src = evt.target.result;
-            user.avatar = evt.target.result;
-            if (typeof showUserProfile === 'function') showUserProfile();
-        };
-        reader.readAsDataURL(file);
-    };
+
+    // Vẽ biểu đồ hoạt động đơn giản (dạng cột)
+    const canvas = section.querySelector('#activityChart');
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const max = Math.max(...chartData, 1);
+        const barWidth = 38;
+        const gap = 22;
+        chartData.forEach((val, i) => {
+            const x = 24 + i * (barWidth + gap);
+            const y = canvas.height - 24 - (val / max) * 100;
+            ctx.fillStyle = '#00d4ff';
+            ctx.fillRect(x, y, barWidth, (val / max) * 100);
+            ctx.fillStyle = '#1e3c72';
+            ctx.font = '13px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText(val, x + barWidth / 2, y - 6);
+            ctx.save();
+            ctx.translate(x + barWidth / 2, canvas.height - 6);
+            ctx.rotate(-Math.PI / 6);
+            ctx.fillText(days[i].slice(5), 0, 0); // MM-DD
+            ctx.restore();
+        });
+    }
+
     // Đăng xuất
-    document.getElementById('settingLogoutBtn').onclick = function() {
+    section.querySelector('#settingLogoutBtn').onclick = function() {
         window.currentUser = null;
         if (typeof showUserProfile === 'function') showUserProfile();
         renderAccountSetting();
     };
-    // Yêu cầu xóa tài khoản (gửi về email người dùng)
-    document.getElementById('settingDeleteBtn').onclick = function() {
+    // Yêu cầu xóa tài khoản
+    section.querySelector('#settingDeleteBtn').onclick = function() {
         if (!user.email) {
-            document.getElementById('settingDeleteMsg').textContent = 'Vui lòng cập nhật email trước khi gửi yêu cầu xóa tài khoản.';
+            section.querySelector('#settingDeleteMsg').textContent = 'Vui lòng cập nhật email trước khi gửi yêu cầu xóa tài khoản.';
             return;
         }
-        // Demo: chỉ hiển thị thông báo, thực tế sẽ gửi email/xử lý backend
-        document.getElementById('settingDeleteMsg').textContent = `Yêu cầu xóa tài khoản đã được gửi về email: ${user.email}. Vui lòng kiểm tra hộp thư để xác nhận.`;
+        section.querySelector('#settingDeleteMsg').textContent = `Yêu cầu xóa tài khoản đã được gửi về email: ${user.email}. Vui lòng kiểm tra hộp thư để xác nhận.`;
     };
 }
 
