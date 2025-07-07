@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Nút menu 3 gạch cho mobile -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Mở menu" style="display:none;position:fixed;top:18px;left:18px;z-index:1100;background:rgba(30,60,114,0.95);border:none;border-radius:8px;padding:8px 12px;font-size:26px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.13);">
+        &#9776;
+    </button>
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -14,7 +18,6 @@
             <div class="nav-item active" data-section="bai-tap">📝 <span class="nav-label" data-i18n="sidebar_baitap">Bài tập</span></div>
             <div class="nav-item" data-section="de-thi">📋 <span class="nav-label" data-i18n="sidebar_dethi">Đề thi</span></div>
             <div class="nav-item" data-section="quan-ly-hoc-sinh">👨‍🎓 <span class="nav-label" data-i18n="sidebar_qlhs">Quản lý học sinh</span></div>
-            <div class="nav-item" data-section="kho-noi-dung">📖 <span class="nav-label" data-i18n="sidebar_khonoidung">Kho nội dung</span></div>
             <div class="nav-item" data-section="ngan-hang-cau-hoi">🏛️ <span class="nav-label" data-i18n="sidebar_nganhang">Ngân hàng câu hỏi</span></div>
             <div class="nav-item" data-section="de-xuat-tinh-nang">✨ <span class="nav-label" data-i18n="sidebar_dexuat">Đề xuất tính năng</span></div>
             <div class="nav-item" data-section="setting">⚙️ <span class="nav-label" data-i18n="sidebar_setting">Cài đặt</span></div>
@@ -90,12 +93,7 @@
                         <input type="file" id="qlhsFile" accept=".xls,.xlsx" style="margin-bottom:8px;">
                         <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên danh sách học sinh</button>
                     </form>
-                </div>
-                <div class="card" onclick="navigateToSection('kho-noi-dung')">
-                    <div class="card-icon">📖</div>
-                    <h3 data-i18n="card_khonoidung_title">Kho nội dung</h3>
-                    <p data-i18n="card_khonoidung_desc">Thư viện tài liệu và bài giảng</p>
-                </div>
+                </div> 
                 <div class="card" onclick="navigateToSection('de-xuat-tinh-nang')">
                     <div class="card-icon">✨</div>
                     <h3 data-i18n="card_dexuat_title">Đề xuất tính năng</h3>
@@ -118,10 +116,6 @@
                 <h2 data-i18n="card_qlhs_title">Quản lý học sinh</h2>
                 <div id="qlhsUploadArea"></div>
                 <!-- Nội dung quản lý học sinh -->
-            </div>
-            <div class="section-content" id="section-kho-noi-dung" style="display:none">
-                <h2 data-i18n="card_khonoidung_title">Kho nội dung</h2>
-                <!-- Nội dung kho nội dung -->
             </div>
             <div class="section-content" id="section-ngan-hang-cau-hoi" style="display:none">
                 <h2 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h2>
@@ -275,6 +269,12 @@
         });
         // Khi load trang, hiển thị dashboard
         showSection('');
+        // Xử lý sự kiện cho nút toggle sidebar
+        document.getElementById('sidebarToggleBtn').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const isVisible = getComputedStyle(sidebar).display !== 'none';
+            sidebar.style.display = isVisible ? 'none' : 'block';
+        });
         </script>
     </div>
     <script type="module">
