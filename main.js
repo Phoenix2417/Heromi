@@ -6,7 +6,7 @@ function navigateToSection(section) {
     }, 150);
     
     // Thông báo điều hướng
-    alert(`Đang chuyển đến: ${section}`);
+    //alert(`Đang chuyển đến: ${section}`);
     
     // Ở đây bạn có thể thêm logic điều hướng thực tế
     // window.location.href = `/${section}`;
