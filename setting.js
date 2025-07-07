@@ -152,11 +152,11 @@ function renderAccountSetting() {
     const chartData = days.map(day => activityData[day] || 0);
 
     section.innerHTML = `
-    <h2>${getSettingText('setting_title') || 'Cài đặt tài khoản'}</h2>
+    <h2>${getSettingText('Cài đặt tài khoản') || 'setting_title'}</h2>
     <div style="margin-bottom:18px;">
-        <b>${getSettingText('setting_role') || 'Chức vụ'}:</b> ${user.role}
+        <b>${getSettingText('Chức vụ') || 'setting_role'}:</b> ${user.role}
         <br>
-        <b>${getSettingText('setting_email') || 'Email'}:</b> ${user.email || ''}
+        <b>${getSettingText('Email') || 'setting_email'}:</b> ${user.email || ''}
     </div>
     <div style="margin-bottom:24px;">
         <b>Thành tựu:</b>
