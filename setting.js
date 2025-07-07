@@ -191,8 +191,8 @@ function renderAccountSetting() {
         <canvas id="activityChart" width="420" height="180" style="background:#fff;border-radius:12px;margin-top:10px;max-width:100%;"></canvas>
     </div>
     <div style="margin-bottom:18px;">
-        <button class="btn btn-secondary" id="settingLogoutBtn">${getSettingText('setting_logout') || 'Đăng xuất'}</button>
-        <button class="btn" id="settingDeleteBtn" style="background:#fff;color:#ee5a24;border:1px solid #ee5a24;margin-left:10px;">${getSettingText('setting_delete') || 'Yêu cầu xóa tài khoản'}</button>
+        <button class="btn btn-secondary" id="settingLogoutBtn">${getSettingText('Đăng xuất') || 'setting_logout'}</button>
+        <button class="btn" id="settingDeleteBtn" style="background:#fff;color:#ee5a24;border:1px solid #ee5a24;margin-left:10px;">${getSettingText('Yêu cầu xóa tài khoản') || 'setting_delete'}</button>
     </div>
     <div id="settingDeleteMsg" style="font-size:13px;color:#ee5a24;"></div>
     `;
