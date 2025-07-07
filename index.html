@@ -103,29 +103,35 @@
             </div>
             <!-- Giao diện từng mục chức năng -->
             <div class="section-content" id="section-bai-tap" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="card_baitap_title">Bài tập</h2>
                 <div id="baitapUploadArea"></div>
                 <!-- Nội dung khác cho bài tập -->
             </div>
             <div class="section-content" id="section-de-thi" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="card_dethi_title">Đề thi</h2>
                 <div id="dethiUploadArea"></div>
                 <!-- Nội dung khác cho đề thi -->
             </div>
             <div class="section-content" id="section-quan-ly-hoc-sinh" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="card_qlhs_title">Quản lý học sinh</h2>
                 <div id="qlhsUploadArea"></div>
                 <!-- Nội dung quản lý học sinh -->
             </div>
             <div class="section-content" id="section-ngan-hang-cau-hoi" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h2>
                 <!-- Nội dung ngân hàng câu hỏi -->
             </div>
             <div class="section-content" id="section-de-xuat-tinh-nang" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="card_dexuat_title">Đề xuất tính năng</h2>
                 <!-- Nội dung đề xuất tính năng -->
             </div>
             <div class="section-content" id="section-setting" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
                 <h2 data-i18n="sidebar_setting">Cài đặt</h2>
                 <!-- Nội dung cài đặt -->
             </div>
@@ -197,7 +203,7 @@
                     Đã có tài khoản? <a onclick="switchToLogin()" data-i18n="login">Đăng nhập</a>
                 </div>
             </div>
-        </div>
+        </div> 
         
         <script src="main.js"></script>
         <script src="baitap.js"></script>
@@ -307,8 +313,19 @@
                 });
             });
         });
+        // Thêm sự kiện cho nút trở về trang chủ
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.back-home-btn').forEach(btn => {
+                btn.onclick = function() {
+                    showSection('');
+                    // Đặt lại sidebar active về dashboard nếu có
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                };
+            });
+        });
         </script>
     </div>
+    <!-- Sidebar overlay sẽ được tạo động bởi JS, không cần thêm gì ở đây -->
     <script type="module">
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
