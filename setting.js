@@ -208,7 +208,7 @@ function renderAccountSetting() {
         chartData.forEach((val, i) => {
             const x = 24 + i * (barWidth + gap);
             const y = canvas.height - 24 - (val / max) * 100;
-            ctx.fillStyle = '#00d4ff';
+            ctx.fillStyle = '#17bd0b';
             ctx.fillRect(x, y, barWidth, (val / max) * 100);
             ctx.fillStyle = '#1e3c72';
             ctx.font = '13px Segoe UI';
