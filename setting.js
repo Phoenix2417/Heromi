@@ -9,75 +9,111 @@ function getSettingText(key) {
 // Hiển thị giao diện cài đặt tài khoản
 function renderAccountSetting() {
     const section = document.getElementById('section-setting');
+    // Ẩn nút đăng nhập/đăng ký ở header
+    if (window.loginBtn) window.loginBtn.style.display = 'none';
+    if (window.registerBtn) window.registerBtn.style.display = 'none';
+    // Hiện hai nút này ở cuối trang cài đặt
+    let loginBtnClone = document.getElementById('loginBtn').cloneNode(true);
+    let registerBtnClone = document.getElementById('registerBtn').cloneNode(true);
+    loginBtnClone.style.display = '';
+    registerBtnClone.style.display = '';
+    loginBtnClone.onclick = window.loginBtn.onclick;
+    registerBtnClone.onclick = window.registerBtn.onclick;
+    // Xóa toàn bộ nội dung cài đặt, chỉ còn hai nút
+    section.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;">
+            <div style="margin-bottom:24px;font-size:18px;color:#00d4ff;font-weight:bold;">Vui lòng đăng nhập hoặc đăng ký để sử dụng các tính năng!</div>
+            <div id="settingAuthBtns" style="display:flex;gap:18px;justify-content:center;">
+            </div>
+        </div>
+    `;
+    // Thêm hai nút vào cuối trang cài đặt
+    const btnsDiv = section.querySelector('#settingAuthBtns');
+    btnsDiv.appendChild(loginBtnClone);
+    btnsDiv.appendChild(registerBtnClone);
+}
+
+// Khi chuyển sang tab cài đặt thì render lại
+window.addEventListener('DOMContentLoaded', function () {
+    const settingTab = document.querySelector('.nav-item[data-section="setting"]');
+    if (settingTab) {
+        settingTab.addEventListener('click', renderAccountSetting);
+    }
+    if (document.getElementById('section-setting').style.display !== 'none') {
+        renderAccountSetting();
+    }
+});
+
+// Nếu showSection được gọi từ nơi khác, cũng render lại nếu là setting
+if (typeof window.showSection === 'function') {
+    const origShowSection = window.showSection;
+    window.showSection = function(section) {
+        origShowSection(section);
+        if (section === 'setting') renderAccountSetting();
+    };
+}
+
+// Đảm bảo cập nhật lại khi đổi ngôn ngữ
+if (window.setLang) {
+    const origSetLang = window.setLang;
+    window.setLang = function(lang) {
+        origSetLang(lang);
+        const settingSection = document.getElementById('section-setting');
+        if (settingSection && settingSection.style.display !== 'none') renderAccountSetting();
+    };
+}
+// Định nghĩa lại hàm renderAccountSetting với đầy đủ logic
+function renderAccountSetting() {
+    const section = document.getElementById('section-setting');
+    // Nếu chưa đăng nhập
     if (!window.currentUser) {
-        // Hiển thị các tính năng cơ bản cho khách (chưa đăng nhập)
+        // Ẩn nút đăng nhập/đăng ký ở header
+        if (window.loginBtn) window.loginBtn.style.display = 'none';
+        if (window.registerBtn) window.registerBtn.style.display = 'none';
+        // Hiện hai nút này ở cuối trang cài đặt
+        let loginBtnClone = document.getElementById('loginBtn').cloneNode(true);
+        let registerBtnClone = document.getElementById('registerBtn').cloneNode(true);
+        loginBtnClone.style.display = '';
+        registerBtnClone.style.display = '';
+        loginBtnClone.onclick = window.loginBtn.onclick;
+        registerBtnClone.onclick = window.registerBtn.onclick;
+        // Xóa toàn bộ nội dung cài đặt, chỉ còn hai nút
         section.innerHTML = `
-        <h2>${getSettingText('setting_title') || 'Cài đặt tài khoản'}</h2>
-        <div style="margin-bottom:18px;color:#fff;">
-            <b>🌐 ${getSettingText('sidebar_setting') || 'Cài đặt'}</b><br>
-            <label for="langSelect" style="margin-top:10px;display:inline-block;">Chọn ngôn ngữ:</label>
-            <select id="settingLangSelect" style="margin-left:8px;padding:4px 10px;border-radius:6px;">
-                <option value="vi">🇻🇳 Tiếng Việt</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="zh">🇨🇳 中文</option>
-                <option value="ja">🇯🇵 日本語</option>
-                <option value="ko">🇰🇷 한국어</option>
-            </select>
-        </div>
-        <div style="margin-bottom:18px;">
-            <b>❓ Hướng dẫn sử dụng:</b>
-            <ul style="margin:8px 0 0 18px;font-size:15px;">
-                <li>Đăng ký tài khoản để sử dụng đầy đủ các tính năng.</li>
-                <li>Có thể đổi ngôn ngữ giao diện tại đây.</li>
-                <li>Liên hệ hỗ trợ nếu cần trợ giúp.</li>
-            </ul>
-        </div>
-        <div style="margin-bottom:18px;">
-            <b>ℹ️ Thông tin hệ thống:</b>
-            <ul style="margin:8px 0 0 18px;font-size:15px;">
-                <li>Phiên bản: 1.0.0</li>
-                <li>Nhà phát triển: Heromi Team</li>
-                <li>Email hỗ trợ: <a href="mailto:nvhuyhoang24107@gmail.com" style="color:#00d4ff;">nvhuyhoang24107@gmail.com</a></li>
-            </ul>
-        </div>
-        <div style="color:#ee5a24;font-size:14px;margin-top:18px;">
-            ${getSettingText('setting_login_required') || 'Vui lòng đăng nhập để sử dụng chức năng cài đặt tài khoản.'}
-        </div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;">
+                <div style="margin-bottom:24px;font-size:18px;color:#00d4ff;font-weight:bold;">Vui lòng đăng nhập hoặc đăng ký để sử dụng các tính năng!</div>
+                <div id="settingAuthBtns" style="display:flex;gap:18px;justify-content:center;">
+                </div>
+            </div>
         `;
-        // Gắn sự kiện đổi ngôn ngữ cho select riêng trong setting
-        const langSelect = document.getElementById('settingLangSelect');
-        if (langSelect) {
-            langSelect.value = window.currentLang || 'vi';
-            langSelect.onchange = function() {
-                if (window.setLang) window.setLang(this.value);
-            };
-        }
+        // Thêm hai nút vào cuối trang cài đặt
+        const btnsDiv = section.querySelector('#settingAuthBtns');
+        btnsDiv.appendChild(loginBtnClone);
+        btnsDiv.appendChild(registerBtnClone);
         return;
     }
-    // Thông tin cá nhân
+
+    // Nếu đã đăng nhập
     const user = window.currentUser;
-    const isTeacher = user.role === 'Giáo viên';
-    const isStudent = user.role === 'Học sinh';
-    // Lấy số lượng bài tập/đề/thành tựu
-    let countBT = 0, countDT = 0, achievements = [];
-    if (window.userHistories && window.userHistories[user.username]) {
-        const history = window.userHistories[user.username].history || [];
-        if (isTeacher) {
-            // Đếm số bài tập và đề thi đã tạo (demo: dựa vào chuỗi)
-            countBT = history.filter(h => h.startsWith('Tạo bài tập')).length;
-            countDT = history.filter(h => h.startsWith('Tạo đề thi')).length;
-            if (countBT + countDT >= 5) achievements.push('🌟 Giáo viên năng động');
-            if (countBT + countDT >= 10) achievements.push('🏆 Giáo viên xuất sắc');
-            if (countBT > 0 && countDT > 0) achievements.push('🧑‍🏫 Đa năng');
-        }
-        if (isStudent) {
-            // Đếm số bài tập và đề thi đã làm (demo: dựa vào chuỗi)
-            countBT = history.filter(h => h.startsWith('Làm bài')).length;
-            countDT = history.filter(h => h.startsWith('Làm đề thi')).length;
-            if (countBT + countDT >= 5) achievements.push('🌟 Học sinh chăm chỉ');
-            if (countBT + countDT >= 10) achievements.push('🏆 Học sinh xuất sắc');
-            if (countBT > 0 && countDT > 0) achievements.push('🎯 Đa tài');
-        }
+    let isTeacher = user.role === 'teacher';
+    let isStudent = user.role === 'student';
+    let history = user.history || [];
+    let countBT = 0, countDT = 0;
+    let achievements = [];
+    if (isTeacher) {
+        // Đếm số bài tập và đề thi đã tạo (demo: dựa vào chuỗi)
+        countBT = history.filter(h => h.startsWith('Tạo bài tập')).length;
+        countDT = history.filter(h => h.startsWith('Tạo đề thi')).length;
+        if (countBT + countDT >= 5) achievements.push('🌟 Giáo viên năng động');
+        if (countBT + countDT >= 10) achievements.push('🏆 Giáo viên xuất sắc');
+        if (countBT > 0 && countDT > 0) achievements.push('🧑‍🏫 Đa năng');
+    }
+    if (isStudent) {
+        // Đếm số bài tập và đề thi đã làm (demo: dựa vào chuỗi)
+        countBT = history.filter(h => h.startsWith('Làm bài')).length;
+        countDT = history.filter(h => h.startsWith('Làm đề thi')).length;
+        if (countBT + countDT >= 5) achievements.push('🌟 Học sinh chăm chỉ');
+        if (countBT + countDT >= 10) achievements.push('🏆 Học sinh xuất sắc');
+        if (countBT > 0 && countDT > 0) achievements.push('🎯 Đa tài');
     }
     // Giao diện
     section.innerHTML = `
