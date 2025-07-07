@@ -269,11 +269,57 @@
         });
         // Khi load trang, hiển thị dashboard
         showSection('');
-        // Xử lý sự kiện cho nút toggle sidebar
-        document.getElementById('sidebarToggleBtn').addEventListener('click', function() {
+        // Xử lý sự kiện cho nút toggle sidebar (dùng class, không dùng style trực tiếp)
+        window.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.querySelector('.sidebar');
-            const isVisible = getComputedStyle(sidebar).display !== 'none';
-            sidebar.style.display = isVisible ? 'none' : 'block';
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            let sidebarOverlay = document.getElementById('sidebarOverlay');
+            if (!sidebarOverlay) {
+                sidebarOverlay = document.createElement('div');
+                sidebarOverlay.className = 'sidebar-overlay';
+                sidebarOverlay.id = 'sidebarOverlay';
+                document.body.appendChild(sidebarOverlay);
+            }
+            function openSidebarMobile() {
+                sidebar.classList.add('sidebar-open');
+                sidebar.classList.remove('sidebar-mobile-hide');
+                sidebarOverlay.classList.add('active');
+            }
+            function closeSidebarMobile() {
+                sidebar.classList.remove('sidebar-open');
+                sidebar.classList.add('sidebar-mobile-hide');
+                sidebarOverlay.classList.remove('active');
+            }
+            function autoHideSidebarOnMobile() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('sidebar-open');
+                    sidebar.classList.add('sidebar-mobile-hide');
+                    sidebarOverlay.classList.remove('active');
+                } else {
+                    sidebar.classList.remove('sidebar-mobile-hide');
+                    sidebar.classList.remove('sidebar-open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            }
+            autoHideSidebarOnMobile();
+            window.addEventListener('resize', autoHideSidebarOnMobile);
+
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.onclick = function () {
+                    if (sidebar.classList.contains('sidebar-open')) {
+                        closeSidebarMobile();
+                    } else {
+                        openSidebarMobile();
+                    }
+                };
+            }
+            sidebarOverlay.onclick = closeSidebarMobile;
+            // Đóng sidebar khi chọn menu trên mobile
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    if (window.innerWidth <= 768) closeSidebarMobile();
+                });
+            });
         });
         </script>
     </div>
