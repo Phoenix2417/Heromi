@@ -1041,3 +1041,58 @@ window.addEventListener('DOMContentLoaded', function () {
         showUserProfile && showUserProfile();
     }
 });
+
+// Sidebar mobile toggle logic
+window.addEventListener('DOMContentLoaded', function () {
+    // Sidebar mobile toggle
+    const sidebar = document.querySelector('.sidebar');
+    let sidebarOverlay = document.getElementById('sidebarOverlay');
+    if (!sidebarOverlay) {
+        sidebarOverlay = document.createElement('div');
+        sidebarOverlay.className = 'sidebar-overlay';
+        sidebarOverlay.id = 'sidebarOverlay';
+        document.body.appendChild(sidebarOverlay);
+    }
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+    function openSidebarMobile() {
+        sidebar.classList.add('sidebar-open');
+        sidebar.classList.remove('sidebar-mobile-hide');
+        sidebarOverlay.classList.add('active');
+    }
+    function closeSidebarMobile() {
+        sidebar.classList.remove('sidebar-open');
+        sidebar.classList.add('sidebar-mobile-hide');
+        sidebarOverlay.classList.remove('active');
+    }
+    // Ẩn sidebar mặc định trên mobile
+    function autoHideSidebarOnMobile() {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-mobile-hide');
+            sidebarOverlay.classList.remove('active');
+        } else {
+            sidebar.classList.remove('sidebar-mobile-hide');
+            sidebar.classList.remove('sidebar-open');
+            sidebarOverlay.classList.remove('active');
+        }
+    }
+    autoHideSidebarOnMobile();
+    window.addEventListener('resize', autoHideSidebarOnMobile);
+
+    if (sidebarToggleBtn) {
+        sidebarToggleBtn.onclick = function () {
+            if (sidebar.classList.contains('sidebar-open')) {
+                closeSidebarMobile();
+            } else {
+                openSidebarMobile();
+            }
+        };
+    }
+    sidebarOverlay.onclick = closeSidebarMobile;
+    // Đóng sidebar khi chọn menu trên mobile
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function () {
+            if (window.innerWidth <= 768) closeSidebarMobile();
+        });
+    });
+});
