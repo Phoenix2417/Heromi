@@ -946,6 +946,50 @@ body {
     text-align: left;
 }
 
+/* Sidebar toggle button (3 gạch) */
+.sidebar-toggle-btn {
+    display: none;
+}
+
+/* Mobile sidebar overlay */
+@media (max-width: 768px) {
+    .sidebar-toggle-btn {
+        display: block !important;
+    }
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100vw;
+        z-index: 1050;
+        height: 100vh;
+        width: 80vw;
+        max-width: 320px;
+        min-width: 0;
+        background: rgba(30,60,114,0.97);
+        transition: left 0.3s cubic-bezier(.4,1.4,.6,1);
+        box-shadow: 2px 0 16px rgba(30,60,114,0.13);
+    }
+    .sidebar.sidebar-open {
+        left: 0;
+    }
+    .sidebar.sidebar-mobile-hide {
+        left: -100vw;
+    }
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1049;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(30,60,114,0.45);
+    }
+    .sidebar-overlay.active {
+        display: block;
+    }
+    .container {
+        padding-left: 0 !important;
+    }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .main-content {
