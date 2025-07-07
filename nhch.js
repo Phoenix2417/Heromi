@@ -1,33 +1,5 @@
 // Danh sách đề thi/bài tập public (demo)
-const publicQuestions = [
-    {
-        id: 1,
-        type: 'Bài tập',
-        title: 'Bài tập Toán lớp 6 - Số học',
-        author: 'Nguyễn Văn A',
-        date: '2024-06-10',
-        description: 'Bài tập số học cơ bản cho học sinh lớp 6.',
-        fileUrl: '#'
-    },
-    {
-        id: 2,
-        type: 'Đề thi',
-        title: 'Đề thi Vật lý lớp 7 - Học kỳ 2',
-        author: 'Trần Thị B',
-        date: '2024-06-09',
-        description: 'Đề thi cuối kỳ môn Vật lý lớp 7.',
-        fileUrl: '#'
-    },
-    {
-        id: 3,
-        type: 'Bài tập',
-        title: 'Bài tập Tiếng Anh lớp 8 - Unit 5',
-        author: 'Lê Văn C',
-        date: '2024-06-08',
-        description: 'Bài tập luyện tập từ vựng và ngữ pháp Unit 5.',
-        fileUrl: '#'
-    }
-];
+const publicQuestions = [];
 
 function getNHCHText(key) {
     if (window.translations && window.currentLang && window.translations[window.currentLang]) {
@@ -41,7 +13,64 @@ function getNHCHText(key) {
 function renderNHCH() {
     const section = document.getElementById('section-ngan-hang-cau-hoi');
     if (!section) return;
-    let html = `<h2>${getNHCHText('Ngân hàng câu hỏi') || 'nhch_title'}</h2>`;
+    let html = `
+    <h2>${getNHCHText('Ngân hàng câu hỏi') || 'nhch_title'}</h2>
+    <form id="nhchFilterForm" style="display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-bottom:18px;">
+        <div>
+            <label style="font-size:14px;">Thời gian tải lên:</label>
+            <select id="nhchFilterTime" style="padding:4px 10px;border-radius:6px;">
+                <option value="">Tất cả</option>
+                <option value="today">Hôm nay</option>
+                <option value="week">7 ngày qua</option>
+                <option value="month">30 ngày qua</option>
+                <option value="year">1 năm qua</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:14px;">Lớp:</label>
+            <select id="nhchFilterClass" style="padding:4px 10px;border-radius:6px;">
+                <option value="">Tất cả</option>
+                <option value="1">Lớp 1</option>
+                <option value="2">Lớp 2</option>
+                <option value="3">Lớp 3</option>
+                <option value="4">Lớp 4</option>
+                <option value="5">Lớp 5</option>
+                <option value="6">Lớp 6</option>
+                <option value="7">Lớp 7</option>
+                <option value="8">Lớp 8</option>
+                <option value="9">Lớp 9</option>
+                <option value="10">Lớp 10</option>
+                <option value="11">Lớp 11</option>
+                <option value="12">Lớp 12</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:14px;">Môn học:</label>
+            <select id="nhchFilterSubject" style="padding:4px 10px;border-radius:6px;">
+                <option value="">Tất cả</option>
+                <option value="toan">Toán</option>
+                <option value="vatly">Vật lý</option>
+                <option value="hoahoc">Hóa học</option>
+                <option value="sinhhoc">Sinh học</option>
+                <option value="tienganh">Tiếng Anh</option>
+                <option value="tiengphap">Tiếng Pháp</option>
+                <option value="tienghan">Tiếng Hàn</option>
+                <option value="tiengnhat">Tiếng Nhật</option>
+                <option value="tiengduc">Tiếng Đức</option>
+                <option value="tiengtrung">Tiếng Trung</option>
+                <option value="tiengnga">Tiếng Nga</option>
+                <option value="gdcd">Giáo dục công dân</option>
+                <option value="ktpl">Giáo dục kinh tế & pháp luật</option>
+                <option value="tin">Tin học</option>
+                <option value="van">Ngữ văn</option>
+                <option value="lichsu">Lịch sử</option>
+                <option value="dialy">Địa lý</option>
+                <!-- Thêm các môn khác nếu cần -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding:6px 18px;font-size:14px;">Tìm kiếm</button>
+    </form>
+    `;
     if (publicQuestions.length === 0) {
         html += `<div>${getNHCHText('Chưa có đề thi hoặc bài tập nào được chia sẻ công khai.') || 'nhch_empty'}</div>`;
     } else {
@@ -63,6 +92,15 @@ function renderNHCH() {
         html += `</div>`;
     }
     section.innerHTML = html;
+
+    // Gắn sự kiện submit cho form lọc (chỉ demo, chưa lọc dữ liệu)
+    const filterForm = document.getElementById('nhchFilterForm');
+    if (filterForm) {
+        filterForm.onsubmit = function(e) {
+            e.preventDefault();
+            alert('Tính năng lọc sẽ được cập nhật sau!');
+        };
+    }
 }
 
 // Xử lý khi người dùng muốn sử dụng/copy đề/bài tập về tài khoản cá nhân
