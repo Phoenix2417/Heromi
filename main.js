@@ -345,37 +345,53 @@ function showUserProfile() {
         userProfile.style.display = 'flex';
         loginBtn.style.display = 'none';
         registerBtn.style.display = 'none';
+
+        // Hiển thị avatar (chữ cái đầu)
         userAvatar.textContent = currentUser.username.charAt(0).toUpperCase();
+
         // Hiển thị họ tên nếu có
         const fullname = currentUser.fullname || '';
-        document.getElementById('userFullname').textContent = fullname ? `(${fullname})` : '';
+        document.getElementById('userFullname').textContent = fullname ? fullname : '';
+
+        // Hiển thị thông tin tài khoản (username, role, email)
+        let infoHtml = '';
+        if (currentUser.role === 'Admin') {
+            infoHtml = `
+                <div style="font-weight:bold;font-size:16px;">
+                    ${currentUser.username} <span style="color:#ee5a24;font-size:13px;">(Admin)</span>
+                </div>
+                <div style="color:#ee5a24;font-weight:bold;font-size:13px;">Quyền quản trị</div>
+            `;
+        } else {
+            infoHtml = `
+                <div style="font-weight:bold;font-size:16px;">${currentUser.username}</div>
+                <div style="font-size:13px;color:#00d4ff;">${currentUser.role}</div>
+                ${currentUser.email ? `<div style="font-size:12px;color:#fff;">${currentUser.email}</div>` : ''}
+            `;
+        }
+        userInfo.innerHTML = infoHtml;
+
         // Hiển thị lịch sử làm bài/tạo bài
         let historyHtml = '';
         const userHistory = userHistories[currentUser.username];
         if (userHistory && Array.isArray(userHistory.history)) {
             if (userHistory.type === 'student') {
-                historyHtml = '<b>Lịch sử làm bài:</b><ul style="margin:0 0 0 12px;padding:0">';
+                historyHtml = '<div style="margin-top:4px;"><b>Lịch sử làm bài:</b><ul style="margin:4px 0 0 14px;padding:0">';
                 userHistory.history.forEach(item => {
-                    historyHtml += `<li>${item}</li>`;
+                    historyHtml += `<li style="font-size:12px;">${item}</li>`;
                 });
-                historyHtml += '</ul>';
+                historyHtml += '</ul></div>';
             } else if (userHistory.type === 'teacher') {
-                historyHtml = '<b>Lịch sử tạo bài:</b><ul style="margin:0 0 0 12px;padding:0">';
+                historyHtml = '<div style="margin-top:4px;"><b>Lịch sử tạo bài:</b><ul style="margin:4px 0 0 14px;padding:0">';
                 userHistory.history.forEach(item => {
-                    historyHtml += `<li>${item}</li>`;
+                    historyHtml += `<li style="font-size:12px;">${item}</li>`;
                 });
-                historyHtml += '</ul>';
+                historyHtml += '</ul></div>';
             }
         } else {
             historyHtml = '';
         }
         document.getElementById('userHistory').innerHTML = historyHtml;
-
-        if (currentUser.role === 'Admin') {
-            userInfo.innerHTML = `<h3>${currentUser.username} <span style="color:#ee5a24;font-size:13px;">(Admin)</span></h3><p style="color:#ee5a24;font-weight:bold;">Quyền quản trị</p>`;
-        } else {
-            userInfo.innerHTML = `<h3>${currentUser.username}</h3><p>${currentUser.role}</p>`;
-        }
     }
 }
 
