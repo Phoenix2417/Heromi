@@ -130,6 +130,30 @@ registerBtn.onclick = function(e) {
     openPopup('register');
 };
 
+// Lưu thông tin đăng nhập vào localStorage
+function saveLoginSession(user) {
+    if (!user) return;
+    // Chỉ lưu các trường cơ bản, không lưu mật khẩu
+    const { username, email, role, fullname, avatar } = user;
+    localStorage.setItem('heromi_user', JSON.stringify({ username, email, role, fullname, avatar }));
+}
+
+// Xóa thông tin đăng nhập khỏi localStorage
+function clearLoginSession() {
+    localStorage.removeItem('heromi_user');
+}
+
+// Đọc thông tin đăng nhập từ localStorage
+function loadLoginSession() {
+    try {
+        const data = localStorage.getItem('heromi_user');
+        if (!data) return null;
+        return JSON.parse(data);
+    } catch {
+        return null;
+    }
+}
+
 // Đăng nhập
 async function handleLogin(event) {
     event.preventDefault();
@@ -143,6 +167,7 @@ async function handleLogin(event) {
         const user = users.find(u => u.username === 'admin' && u.password === password && u.role === 'Admin');
         if (user) {
             currentUser = user;
+            saveLoginSession(user);
             closePopup();
             showUserProfile();
         } else {
@@ -163,12 +188,15 @@ async function handleLogin(event) {
             return false;
         }
         // Có thể lấy thêm thông tin user từ Firestore nếu muốn
+        // Lưu session cho Firebase user
+        saveLoginSession({ username: email, email: email, role: role });
     }
 
     // Người dùng thường (local)
     const user = users.find(u => u.username === username && u.password === password && u.role === role && u.role !== 'Admin');
     if (user) {
         currentUser = user;
+        saveLoginSession(user);
         closePopup();
         showUserProfile();
     } else {
@@ -995,4 +1023,21 @@ function getCurrentSection() {
 
 // Khi load trang, hiển thị dashboard
 showSection('');
-showSection('');
+
+
+// Đăng xuất
+document.getElementById('settingLogoutBtn').onclick = function() {
+    window.currentUser = null;
+    clearLoginSession();
+    if (typeof showUserProfile === 'function') showUserProfile();
+    renderAccountSetting();
+};
+
+// Khi load lại trang, tự động đăng nhập nếu có session
+window.addEventListener('DOMContentLoaded', function () {
+    const sessionUser = loadLoginSession();
+    if (sessionUser) {
+        window.currentUser = sessionUser;
+        showUserProfile && showUserProfile();
+    }
+});
