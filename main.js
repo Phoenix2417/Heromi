@@ -1067,9 +1067,8 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Sidebar mobile toggle logic
+// Sidebar popup logic for all screen sizes
 window.addEventListener('DOMContentLoaded', function () {
-    // Sidebar mobile toggle
     const sidebar = document.querySelector('.sidebar');
     let sidebarOverlay = document.getElementById('sidebarOverlay');
     if (!sidebarOverlay) {
@@ -1079,45 +1078,33 @@ window.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(sidebarOverlay);
     }
     const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-    function openSidebarMobile() {
+    function openSidebarPopup() {
         sidebar.classList.add('sidebar-open');
         sidebar.classList.remove('sidebar-mobile-hide');
         sidebarOverlay.classList.add('active');
     }
-    function closeSidebarMobile() {
+    function closeSidebarPopup() {
         sidebar.classList.remove('sidebar-open');
         sidebar.classList.add('sidebar-mobile-hide');
         sidebarOverlay.classList.remove('active');
     }
-    // Ẩn sidebar mặc định trên mobile
-    function autoHideSidebarOnMobile() {
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('sidebar-open');
-            sidebar.classList.add('sidebar-mobile-hide');
-            sidebarOverlay.classList.remove('active');
-        } else {
-            sidebar.classList.remove('sidebar-mobile-hide');
-            sidebar.classList.remove('sidebar-open');
-            sidebarOverlay.classList.remove('active');
-        }
-    }
-    autoHideSidebarOnMobile();
-    window.addEventListener('resize', autoHideSidebarOnMobile);
+    // Always hide sidebar by default
+    closeSidebarPopup();
 
     if (sidebarToggleBtn) {
         sidebarToggleBtn.onclick = function () {
             if (sidebar.classList.contains('sidebar-open')) {
-                closeSidebarMobile();
+                closeSidebarPopup();
             } else {
-                openSidebarMobile();
+                openSidebarPopup();
             }
         };
     }
-    sidebarOverlay.onclick = closeSidebarMobile;
-    // Đóng sidebar khi chọn menu trên mobile
+    sidebarOverlay.onclick = closeSidebarPopup;
+    // Đóng sidebar khi chọn menu
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function () {
-            if (window.innerWidth <= 768) closeSidebarMobile();
+            closeSidebarPopup();
         });
     });
 });
