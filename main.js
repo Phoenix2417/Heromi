@@ -1098,3 +1098,13 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+function toggleMenu() {
+  document.getElementById("side-menu").style.display = "block";
+  document.getElementById("menu-icon").style.display = "none";
+}
+
+function hideMenu() {
+  document.getElementById("side-menu").style.display = "none";
+  document.getElementById("menu-icon").style.display = "inline-block";
+}
