@@ -1173,3 +1173,38 @@ body {
     font-weight: 600;
     letter-spacing: 0.5px;
 }
+#menu-icon {
+  font-size: 28px;
+  cursor: pointer;
+  padding: 10px;
+  background-color: #0051a2;
+  color: white;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+#side-menu {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  background-color: #0d47a1;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  display: none;
+  z-index: 1000;
+}
+
+#side-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#side-menu ul li {
+  padding: 10px 0;
+  cursor: pointer;
+}
+#side-menu ul li:hover {
+  text-decoration: underline;
+}
