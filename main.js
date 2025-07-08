@@ -68,20 +68,6 @@ const userInfo = document.getElementById('userInfo');
  * @property {boolean} [isActive] - Trạng thái hoạt động (tùy chọn)
  */
 
-// Danh sách người dùng mẫu
-/** @type {User[]} */
-let users = [
-    {
-        username: 'hoang',
-        password: '123456',
-        email: 'hoang@gmail.com',
-        role: 'Giáo viên',
-        fullname: 'Nguyễn Văn Hoàng',
-        avatar: '',
-        createdAt: '2024-06-01T10:00:00Z',
-        isActive: true
-    }
-];
 
 // Thêm tài khoản admin mặc định nếu chưa có
 (function ensureDefaultAdmin() {
@@ -1082,11 +1068,15 @@ window.addEventListener('DOMContentLoaded', function () {
         sidebar.classList.add('sidebar-open');
         sidebar.classList.remove('sidebar-mobile-hide');
         sidebarOverlay.classList.add('active');
+        // Ẩn nút menu khi sidebar mở
+        if (sidebarToggleBtn) sidebarToggleBtn.style.display = 'none';
     }
     function closeSidebarPopup() {
         sidebar.classList.remove('sidebar-open');
         sidebar.classList.add('sidebar-mobile-hide');
         sidebarOverlay.classList.remove('active');
+        // Hiện lại nút menu khi sidebar đóng
+        if (sidebarToggleBtn) sidebarToggleBtn.style.display = '';
     }
     // Always hide sidebar by default
     closeSidebarPopup();
