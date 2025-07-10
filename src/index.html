@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heromi - Trang học liệu miễn phí</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Nút mở sidebar (menu 3 gạch) -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Mở menu">&#9776;</button>
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <!-- Sidebar popup -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header" style="display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid #ccc;">
+            <div style="display:flex; align-items:center;">
+                <div class="sidebar-logo" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 50%; box-shadow: 0 2px 8px #1e3c7233; margin-right: 12px;">
+                    <img src="/assets/logo.png" alt="Heromi" style="width:44px;height:44px;border-radius:50%;background:transparent;box-shadow:none;">
+                </div>
+                <span class="sidebar-title" style="font-weight:600; font-size:1.2rem; color:#ffffff;">Heromi</span>
+            </div>
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Đóng menu" style="font-size: 24px; background:none; border:none; cursor:pointer; color:#1e3c72;">&times;</button>
+        </div>
+        <ul class="sidebar-menu" style="list-style:none; padding:0; margin:0;">
+            <li class="nav-item active" data-section="bai-tap" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_baitap">Bài tập</span>
+            </li>
+            <li class="nav-item" data-section="de-thi" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_dethi">Đề thi</span>
+            </li>
+            <li class="nav-item" data-section="quan-ly-hoc-sinh" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_qlhs">Quản lý học sinh</span>
+            </li>
+            <li class="nav-item" data-section="ngan-hang-cau-hoi" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_nganhang">Ngân hàng câu hỏi</span>
+            </li>
+            <li class="nav-item" data-section="de-xuat-tinh-nang" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_dexuat">Đề xuất tính năng</span>
+            </li>
+            <li class="nav-item" data-section="setting" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_setting">Cài đặt</span>
+            </li>
+        </ul>
+        <div class="sidebar-footer" style="padding: 12px 16px; border-top: 1px solid #ccc; text-align:center;">
+            <select id="langSelect" class="lang-select" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; cursor:pointer;">
+                <option value="vi">🇻🇳 VN</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="ko">🇰🇷 한국어</option>
+            </select>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1 id="mainTitle" data-i18n="dashboard_title">Trang chủ</h1>
+                    <!-- Thanh tìm kiếm -->
+                    <form class="search-bar" onsubmit="return handleSearch(event)">
+                        <input type="text" id="dashboardSearch" data-i18n-placeholder="search_placeholder" placeholder="Tìm kiếm..." autocomplete="off">
+                        <button type="submit">🔍</button>
+                    </form>
+                </div>
+                <div class="header-right">
+                    <a href="#" class="btn btn-primary" id="loginBtn" data-i18n="loginBtn">Đăng nhập</a>
+                    <a href="#" class="btn btn-secondary" id="registerBtn" data-i18n="registerBtn">Đăng ký</a>
+                    <div class="user-profile" style="display:none" id="userProfile">
+                        <div class="user-avatar" id="userAvatar">H</div>
+                        <div class="user-info" id="userInfo">
+                            <!-- Thông tin user sẽ được thêm động -->
+                        </div>
+                        <div class="user-fullname" id="userFullname"></div>
+                        <div class="user-history" id="userHistory"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid" id="dashboardGrid">
+                <div class="card" onclick="navigateToSection('bai-tap')">
+                    <div class="card-icon">📝</div>
+                    <h3 data-i18n="card_baitap_title">Bài tập</h3>
+                    <p data-i18n="card_baitap_desc">Quản lý và tạo bài tập cho học sinh</p>
+                    <!-- Form upload chỉ cho giáo viên, ẩn mặc định, hiển thị bằng JS nếu đúng quyền -->
+                    <form id="baitapUploadForm" style="display:none; margin-top:18px;">
+                        <input type="file" id="baitapFile" accept=".pdf,.doc,.docx" style="margin-bottom:8px;">
+                        <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên bài tập</button>
+                    </form>
+                </div>
+                <div class="card" onclick="navigateToSection('de-thi')">
+                    <div class="card-icon">📋</div>
+                    <h3 data-i18n="card_dethi_title">Đề thi</h3>
+                    <p data-i18n="card_dethi_desc">Tạo và quản lý đề thi, kiểm tra</p>
+                    <!-- Form upload chỉ cho giáo viên, ẩn mặc định, hiển thị bằng JS nếu đúng quyền -->
+                    <form id="dethiUploadForm" style="display:none; margin-top:18px;">
+                        <input type="file" id="dethiFile" accept=".pdf,.doc,.docx" style="margin-bottom:8px;">
+                        <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên đề thi</button>
+                    </form>
+                </div>
+                <div class="card" onclick="navigateToSection('ngan-hang-cau-hoi')">
+                    <div class="card-icon">🏛️</div>
+                    <h3 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h3>
+                    <p data-i18n="card_nganhang_desc">Bộ sưu tập câu hỏi theo chủ đề</p>
+                </div>
+                <div class="card" onclick="navigateToSection('quan-ly-hoc-sinh')">
+                    <div class="card-icon">👨‍🎓</div>
+                    <h3 data-i18n="card_qlhs_title">Quản lý học sinh</h3>
+                    <p data-i18n="card_qlhs_desc">Quản lý danh sách học sinh, tải lên từ file Excel</p>
+                    <!-- Form upload chỉ cho giáo viên, ẩn mặc định, hiển thị bằng JS nếu đúng quyền -->
+                    <form id="qlhsUploadForm" style="display:none; margin-top:18px;">
+                        <input type="file" id="qlhsFile" accept=".xls,.xlsx" style="margin-bottom:8px;">
+                        <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên danh sách học sinh</button>
+                    </form>
+                </div> 
+                <div class="card" onclick="navigateToSection('de-xuat-tinh-nang')">
+                    <div class="card-icon">✨</div>
+                    <h3 data-i18n="card_dexuat_title">Đề xuất tính năng</h3>
+                    <p data-i18n="card_dexuat_desc">Gợi ý tính năng mới cho hệ thống</p>
+                    <div class="vip-badge" data-i18n="vip_badge">VIP</div>
+                </div>
+            </div>
+            <!-- Giao diện từng mục chức năng -->
+            <div class="section-content" id="section-bai-tap" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="card_baitap_title">Bài tập</h2>
+                <div id="baitapUploadArea"></div>
+                <!-- Nội dung khác cho bài tập -->
+            </div>
+            <div class="section-content" id="section-de-thi" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="card_dethi_title">Đề thi</h2>
+                <div id="dethiUploadArea"></div>
+                <!-- Nội dung khác cho đề thi -->
+            </div>
+            <div class="section-content" id="section-quan-ly-hoc-sinh" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="card_qlhs_title">Quản lý học sinh</h2>
+                <div id="qlhsUploadArea"></div>
+                <!-- Nội dung quản lý học sinh -->
+            </div>
+            <div class="section-content" id="section-ngan-hang-cau-hoi" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h2>
+                <!-- Nội dung ngân hàng câu hỏi -->
+            </div>
+            <div class="section-content" id="section-de-xuat-tinh-nang" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="card_dexuat_title">Đề xuất tính năng</h2>
+                <!-- Nội dung đề xuất tính năng -->
+            </div>
+            <div class="section-content" id="section-setting" style="display:none">
+                <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                <h2 data-i18n="sidebar_setting">Cài đặt</h2>
+                <!-- Nội dung cài đặt -->
+            </div>
+        </div>
+        <!-- Popup Đăng nhập/Đăng ký -->
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup" id="loginPopup">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <div class="popup-header">
+                    <div class="popup-icon">🔐</div>
+                    <h2 data-i18n="login">Đăng nhập</h2>
+                    <p class="popup-desc" data-i18n="loginDesc">Chào mừng bạn quay lại! Vui lòng đăng nhập để tiếp tục.</p>
+                </div>
+                <form id="loginForm" autocomplete="off" onsubmit="return handleLogin(event)">
+                    <label for="loginUsername" data-i18n="username">Tên đăng nhập</label>
+                    <input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập" required>
+                    <label for="loginPassword" data-i18n="password">Mật khẩu</label>
+                    <div class="input-password">
+                        <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</span>
+                    </div>
+                    <label for="loginRole" data-i18n="role">Chức vụ</label>
+                    <select id="loginRole" required>
+                        <option value="" disabled selected data-i18n="selectRole">Chọn chức vụ</option>
+                        <option value="Giáo viên" data-i18n="teacher">Giáo viên</option>
+                        <option value="Học sinh" data-i18n="student">Học sinh</option>
+                    </select>
+                    <div class="role-desc"><span data-i18n="roleDescLogin">Chọn đúng chức vụ để truy cập quyền phù hợp.</span></div>
+                    <div class="error-msg" id="loginError"></div>
+                    <button class="btn btn-primary" type="submit" data-i18n="loginBtn">Đăng nhập</button>
+                </form>
+                <div class="switch-link" data-i18n="noAccount">
+                    Chưa có tài khoản? <a onclick="switchToRegister()" data-i18n="register">Đăng ký</a>
+                </div>
+            </div>
+            <div class="popup" id="registerPopup" style="display:none">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <div class="popup-header">
+                    <div class="popup-icon">📝</div>
+                    <h2 data-i18n="register">Đăng ký</h2>
+                    <p class="popup-desc" data-i18n="registerDesc">Tạo tài khoản mới để sử dụng các tính năng của hệ thống.</p>
+                </div>
+                <form id="registerForm" autocomplete="off" onsubmit="return handleRegister(event)">
+                    <label for="registerUsername" data-i18n="username">Tên đăng nhập</label>
+                    <input type="text" id="registerUsername" placeholder="Nhập tên đăng nhập" required>
+                    <label for="registerEmail" data-i18n="email">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Nhập email" required>
+                    <label for="registerPassword" data-i18n="password">Mật khẩu</label>
+                    <div class="input-password">
+                        <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('registerPassword', this)">👁️</span>
+                    </div>
+                    <label for="registerPassword2" data-i18n="password2">Nhập lại mật khẩu</label>
+                    <div class="input-password">
+                        <input type="password" id="registerPassword2" placeholder="Nhập lại mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('registerPassword2', this)">👁️</span>
+                    </div>
+                    <label for="registerRole" data-i18n="role">Chức vụ</label>
+                    <select id="registerRole" required>
+                        <option value="" disabled selected data-i18n="selectRole">Chọn chức vụ</option>
+                        <option value="Giáo viên" data-i18n="teacher">Giáo viên</option>
+                        <option value="Học sinh" data-i18n="student">Học sinh</option>
+                    </select>
+                    <div class="role-desc"><span data-i18n="roleDescRegister">Chọn đúng chức vụ để đăng ký tài khoản phù hợp.</span></div>
+                    <div class="error-msg" id="registerError"></div>
+                    <button class="btn btn-secondary" type="submit" data-i18n="registerBtn">Đăng ký</button>
+                </form>
+                <div class="switch-link" data-i18n="haveAccount">
+                    Đã có tài khoản? <a onclick="switchToLogin()" data-i18n="login">Đăng nhập</a>
+                </div>
+            </div>
+        </div> 
+        
+        <script src="./main.js"></script>
+        <script src="/functions/baitap.js"></script>
+        <script src="/functions/dethi.js"></script>
+        <script src="/functions/qlhs.js"></script>
+        <script src="/functions/setting.js"></script>
+        <script src="/functions/nhch.js"></script>
+        <script>
+        // Hiển thị form upload nếu là giáo viên
+        window.addEventListener('DOMContentLoaded', function () {
+            if (window.currentUser && window.currentUser.role === 'Giáo viên') {
+                document.getElementById('baitapUploadForm').style.display = '';
+                document.getElementById('dethiUploadForm').style.display = '';
+                document.getElementById('qlhsUploadForm').style.display = '';
+            }
+        });
+        // Khi đăng nhập thành công cũng cần kiểm tra lại
+        window.showUserProfile = (function (orig) {
+            return function () {
+                orig && orig();
+                if (window.currentUser && window.currentUser.role === 'Giáo viên') {
+                    document.getElementById('baitapUploadForm').style.display = '';
+                    document.getElementById('dethiUploadForm').style.display = '';
+                    document.getElementById('qlhsUploadForm').style.display = '';
+                } else {
+                    document.getElementById('baitapUploadForm').style.display = 'none';
+                    document.getElementById('dethiUploadForm').style.display = 'none';
+                    document.getElementById('qlhsUploadForm').style.display = 'none';
+                }
+            };
+        })(window.showUserProfile);
+        // Ẩn/hiện giao diện từng mục chức năng
+        function showSection(section) {
+            // Ẩn dashboard grid
+            document.getElementById('dashboardGrid').style.display = section ? 'none' : '';
+            // Ẩn tất cả section-content
+            document.querySelectorAll('.section-content').forEach(el => el.style.display = 'none');
+            if (section) {
+                const el = document.getElementById('section-' + section);
+                if (el) el.style.display = '';
+            }
+        }
+        // Gắn lại sự kiện cho sidebar/card
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        });
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const section = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                showSection(section);
+            });
+        });
+        // Khi load trang, hiển thị dashboard
+        showSection('');
+        // Xử lý sự kiện cho nút toggle sidebar (dùng class, không dùng style trực tiếp)
+        window.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            let sidebarOverlay = document.getElementById('sidebarOverlay');
+            if (!sidebarOverlay) {
+                sidebarOverlay = document.createElement('div');
+                sidebarOverlay.className = 'sidebar-overlay';
+                sidebarOverlay.id = 'sidebarOverlay';
+                document.body.appendChild(sidebarOverlay);
+            }
+            function openSidebarMobile() {
+                sidebar.classList.add('sidebar-open');
+                sidebar.classList.remove('sidebar-mobile-hide');
+                sidebarOverlay.classList.add('active');
+            }
+            function closeSidebarMobile() {
+                sidebar.classList.remove('sidebar-open');
+                sidebar.classList.add('sidebar-mobile-hide');
+                sidebarOverlay.classList.remove('active');
+            }
+            function autoHideSidebarOnMobile() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('sidebar-open');
+                    sidebar.classList.add('sidebar-mobile-hide');
+                    sidebarOverlay.classList.remove('active');
+                } else {
+                    sidebar.classList.remove('sidebar-mobile-hide');
+                    sidebar.classList.remove('sidebar-open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            }
+            autoHideSidebarOnMobile();
+            window.addEventListener('resize', autoHideSidebarOnMobile);
+
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.onclick = function () {
+                    if (sidebar.classList.contains('sidebar-open')) {
+                        closeSidebarMobile();
+                    } else {
+                        openSidebarMobile();
+                    }
+                };
+            }
+            sidebarOverlay.onclick = closeSidebarMobile;
+            // Đóng sidebar khi chọn menu trên mobile
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    if (window.innerWidth <= 768) closeSidebarMobile();
+                });
+            });
+        });
+        // Thêm sự kiện cho nút trở về trang chủ
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.back-home-btn').forEach(btn => {
+                btn.onclick = function() {
+                    showSection('');
+                    // Đặt lại sidebar active về dashboard nếu có
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                };
+            });
+        });
+        </script>
+    </div>
+    <!-- Sidebar overlay sẽ được tạo động bởi JS, không cần thêm gì ở đây -->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBN6H7g8MlpaabYFu88miVqigqyRDNhcx8",
+        authDomain: "heromi-77650.firebaseapp.com",
+        projectId: "heromi-77650",
+        storageBucket: "heromi-77650.firebasestorage.app",
+        messagingSenderId: "80819533386",
+        appId: "1:80819533386:web:102d1a45ae711fb49358b3",
+        measurementId: "G-YMEPRBQ164"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+</body>
+</html>
