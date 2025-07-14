@@ -15,7 +15,7 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header" style="display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid #ccc;">
             <div style="display:flex; align-items:center;">
-                <div class="sidebar-logo" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 50%; box-shadow: 0 2px 8px #1e3c7233; margin-right: 12px;">
+                <div class="sidebar-logo" style="background: linear-gradient(135deg, #2a5298 100%, #2a5298 100%); border-radius: 50%; box-shadow: 0 2px 8px #1e3c7233; margin-right: 12px;">
                     <img src="/assets/logo.png" alt="Heromi" style="width:44px;height:44px;border-radius:50%;background:transparent;box-shadow:none;">
                 </div>
                 <span class="sidebar-title" style="font-weight:600; font-size:1.2rem; color:#ffffff;">Heromi</span>
@@ -333,6 +333,14 @@
                 };
             });
         });
+        <!-- Thêm nút đăng xuất trong userProfile -->
+  <div class="user-profile" style="display:none" id="userProfile">
+    <div class="user-avatar" id="userAvatar">H</div>
+    <div class="user-info" id="userInfo"></div>
+    <div class="user-fullname" id="userFullname"></div>
+    <div class="user-history" id="userHistory"></div>
+    <button onclick="logoutUser()" class="btn btn-secondary" style="margin-left:10px">Đăng xuất</button>
+  </div>
         </script>
     </div>
     <!-- Sidebar overlay sẽ được tạo động bởi JS, không cần thêm gì ở đây -->
@@ -355,9 +363,88 @@
         measurementId: "G-YMEPRBQ164"
       };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
+      // Khởi tạo Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Đăng ký
+window.handleRegister = async function(e) {
+  e.preventDefault();
+  const username = document.getElementById("registerUsername").value.trim();
+  const email = document.getElementById("registerEmail").value.trim();
+  const password = document.getElementById("registerPassword").value;
+  const confirm = document.getElementById("registerPassword2").value;
+  const role = document.getElementById("registerRole").value;
+  const errorDiv = document.getElementById("registerError");
+  errorDiv.textContent = "";
+
+  if (password !== confirm) {
+    errorDiv.textContent = "Mật khẩu nhập lại không khớp.";
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      username,
+      email,
+      role
+    });
+
+    alert("Đăng ký thành công! Hãy đăng nhập.");
+    switchToLogin();
+  } catch (error) {
+    errorDiv.textContent = error.message;
+  }
+};
+
+// Đăng nhập
+window.handleLogin = async function(e) {
+  e.preventDefault();
+  const emailOrUsername = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const role = document.getElementById("loginRole").value;
+  const errorDiv = document.getElementById("loginError");
+  errorDiv.textContent = "";
+
+  try {
+    // Cho phép đăng nhập bằng email
+    const userCredential = await signInWithEmailAndPassword(auth, emailOrUsername, password);
+    const user = userCredential.user;
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (!userDoc.exists()) throw new Error("Không tìm thấy tài khoản.");
+
+    const userData = userDoc.data();
+    if (userData.role !== role) {
+      throw new Error("Sai chức vụ.");
+    }
+
+    // Lưu thông tin user vào biến toàn cục
+    window.currentUser = userData;
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("registerBtn").style.display = "none";
+    document.getElementById("userProfile").style.display = "flex";
+    document.getElementById("userFullname").innerText = userData.username;
+    showUserProfile();
+
+    closePopup();
+  } catch (error) {
+    errorDiv.textContent = "Đăng nhập thất bại: " + error.message;
+  }
+};
+
+// Đăng xuất
+window.logoutUser = async function() {
+  await signOut(auth);
+  window.currentUser = null;
+  document.getElementById("loginBtn").style.display = "";
+  document.getElementById("registerBtn").style.display = "";
+  document.getElementById("userProfile").style.display = "none";
+};
     </script>
 </body>
 </html>
