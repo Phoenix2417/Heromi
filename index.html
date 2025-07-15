@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heromi - Trang học liệu miễn phí</title>
+    <link rel="icon" href="/assets/heromi.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -64,6 +65,7 @@
                         </div>
                         <div class="user-fullname" id="userFullname"></div>
                         <div class="user-history" id="userHistory"></div>
+                        <button onclick="logoutUser()" class="btn btn-secondary" style="margin-left:10px">Đăng xuất</button>
                     </div>
                 </div>
             </div>
@@ -222,14 +224,61 @@
         <script src="setting.js"></script>
         <script src="nhch.js"></script>
         <script>
+        // Popup functions
+        function openPopup(popupId) {
+            document.getElementById('popupOverlay').style.display = 'flex';
+            document.getElementById(popupId).style.display = 'block';
+        }
+        
+        function closePopup() {
+            document.getElementById('popupOverlay').style.display = 'none';
+            document.getElementById('loginPopup').style.display = 'none';
+            document.getElementById('registerPopup').style.display = 'none';
+        }
+        
+        function switchToRegister() {
+            document.getElementById('loginPopup').style.display = 'none';
+            document.getElementById('registerPopup').style.display = 'block';
+        }
+        
+        function switchToLogin() {
+            document.getElementById('registerPopup').style.display = 'none';
+            document.getElementById('loginPopup').style.display = 'block';
+        }
+        
+        // Add event listeners to login/register buttons
+        document.getElementById('loginBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openPopup('loginPopup');
+        });
+        
+        document.getElementById('registerBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openPopup('registerPopup');
+        });
+
         // Hiển thị form upload nếu là giáo viên
         window.addEventListener('DOMContentLoaded', function () {
+            // Initialize sidebar
+            autoHideSidebarOnMobile();
+            window.addEventListener("resize", autoHideSidebarOnMobile);
+            
+            // Initialize popups
+            document.querySelectorAll('.back-home-btn').forEach(btn => {
+                btn.onclick = function() {
+                    showSection('');
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                };
+            });
+            
+            // Check user role for upload forms
             if (window.currentUser && window.currentUser.role === 'Giáo viên') {
                 document.getElementById('baitapUploadForm').style.display = '';
                 document.getElementById('dethiUploadForm').style.display = '';
                 document.getElementById('qlhsUploadForm').style.display = '';
             }
         });
+
         // Khi đăng nhập thành công cũng cần kiểm tra lại
         window.showUserProfile = (function (orig) {
             return function () {
@@ -245,6 +294,7 @@
                 }
             };
         })(window.showUserProfile);
+        
         // Ẩn/hiện giao diện từng mục chức năng
         function showSection(section) {
             // Ẩn dashboard grid
@@ -256,6 +306,7 @@
                 if (el) el.style.display = '';
             }
         }
+        
         // Gắn lại sự kiện cho sidebar/card
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
@@ -263,91 +314,70 @@
                 showSection(section);
             });
         });
+        
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
                 const section = this.getAttribute('onclick').match(/'([^']+)'/)[1];
                 showSection(section);
             });
         });
+        
         // Khi load trang, hiển thị dashboard
         showSection('');
+        
         // Xử lý sự kiện cho nút toggle sidebar (dùng class, không dùng style trực tiếp)
-        window.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.getElementById("sidebar");
-    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
-    const sidebarOverlay = document.getElementById("sidebarOverlay");
+        function autoHideSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove("sidebar-open");
+                sidebarOverlay.classList.remove("active");
+            }
+        }
 
-    function openSidebarMobile() {
-        sidebar.classList.add("sidebar-open");
-        sidebarOverlay.classList.add("active");
-    }
+        function openSidebarMobile() {
+            sidebar.classList.add("sidebar-open");
+            sidebarOverlay.classList.add("active");
+        }
 
-    function closeSidebarMobile() {
-        sidebar.classList.remove("sidebar-open");
-        sidebarOverlay.classList.remove("active");
-    }
-
-    // Tự động ẩn sidebar khi thu nhỏ màn hình
-    function autoHideSidebarOnMobile() {
-        if (window.innerWidth <= 768) {
+        function closeSidebarMobile() {
             sidebar.classList.remove("sidebar-open");
             sidebarOverlay.classList.remove("active");
         }
-    }
 
-    autoHideSidebarOnMobile();
-    window.addEventListener("resize", autoHideSidebarOnMobile);
-
-    // Toggle khi nhấn nút menu
-    sidebarToggleBtn.addEventListener("click", function () {
-        if (sidebar.classList.contains("sidebar-open")) {
-            closeSidebarMobile();
-        } else {
-            openSidebarMobile();
-        }
-    });
-
-    // Đóng khi bấm ra ngoài
-    sidebarOverlay.addEventListener("click", closeSidebarMobile);
-
-    // Đóng khi chọn menu (trên mobile)
-    document.querySelectorAll(".nav-item").forEach(item => {
-        item.addEventListener("click", function () {
-            if (window.innerWidth <= 768) closeSidebarMobile();
+        // Toggle khi nhấn nút menu
+        sidebarToggleBtn.addEventListener("click", function () {
+            if (sidebar.classList.contains("sidebar-open")) {
+                closeSidebarMobile();
+            } else {
+                openSidebarMobile();
+            }
         });
-    });
-});
 
-        // Thêm sự kiện cho nút trở về trang chủ
-        window.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.back-home-btn').forEach(btn => {
-                btn.onclick = function() {
-                    showSection('');
-                    // Đặt lại sidebar active về dashboard nếu có
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                };
+        // Đóng khi bấm ra ngoài
+        sidebarOverlay.addEventListener("click", closeSidebarMobile);
+
+        // Đóng khi chọn menu (trên mobile)
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.addEventListener("click", function () {
+                if (window.innerWidth <= 768) closeSidebarMobile();
             });
         });
-        <!-- Thêm nút đăng xuất trong userProfile -->
-  <div class="user-profile" style="display:none" id="userProfile">
-    <div class="user-avatar" id="userAvatar">H</div>
-    <div class="user-info" id="userInfo"></div>
-    <div class="user-fullname" id="userFullname"></div>
-    <div class="user-history" id="userHistory"></div>
-    <button onclick="logoutUser()" class="btn btn-secondary" style="margin-left:10px">Đăng xuất</button>
-  </div>
-        </script>
-    </div>
-    <!-- Sidebar overlay sẽ được tạo động bởi JS, không cần thêm gì ở đây -->
+    </script>
     <script type="module">
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
-
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      import { 
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword, 
+        signOut 
+      } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+      import { 
+        getFirestore, 
+        doc, 
+        setDoc, 
+        getDoc 
+      } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
       const firebaseConfig = {
         apiKey: "AIzaSyBN6H7g8MlpaabYFu88miVqigqyRDNhcx8",
         authDomain: "heromi-77650.firebaseapp.com",
@@ -359,87 +389,87 @@
       };
 
       // Khởi tạo Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-// Đăng ký
-window.handleRegister = async function(e) {
-  e.preventDefault();
-  const username = document.getElementById("registerUsername").value.trim();
-  const email = document.getElementById("registerEmail").value.trim();
-  const password = document.getElementById("registerPassword").value;
-  const confirm = document.getElementById("registerPassword2").value;
-  const role = document.getElementById("registerRole").value;
-  const errorDiv = document.getElementById("registerError");
-  errorDiv.textContent = "";
+      // Đăng ký
+      window.handleRegister = async function(e) {
+        e.preventDefault();
+        const username = document.getElementById("registerUsername").value.trim();
+        const email = document.getElementById("registerEmail").value.trim();
+        const password = document.getElementById("registerPassword").value;
+        const confirm = document.getElementById("registerPassword2").value;
+        const role = document.getElementById("registerRole").value;
+        const errorDiv = document.getElementById("registerError");
+        errorDiv.textContent = "";
 
-  if (password !== confirm) {
-    errorDiv.textContent = "Mật khẩu nhập lại không khớp.";
-    return;
-  }
+        if (password !== confirm) {
+          errorDiv.textContent = "Mật khẩu nhập lại không khớp.";
+          return;
+        }
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
 
-    await setDoc(doc(db, "users", user.uid), {
-      username,
-      email,
-      role
-    });
+          await setDoc(doc(db, "users", user.uid), {
+            username,
+            email,
+            role
+          });
 
-    alert("Đăng ký thành công! Hãy đăng nhập.");
-    switchToLogin();
-  } catch (error) {
-    errorDiv.textContent = error.message;
-  }
-};
+          alert("Đăng ký thành công! Hãy đăng nhập.");
+          switchToLogin();
+        } catch (error) {
+          errorDiv.textContent = error.message;
+        }
+      };
 
-// Đăng nhập
-window.handleLogin = async function(e) {
-  e.preventDefault();
-  const emailOrUsername = document.getElementById("loginUsername").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const role = document.getElementById("loginRole").value;
-  const errorDiv = document.getElementById("loginError");
-  errorDiv.textContent = "";
+      // Đăng nhập
+      window.handleLogin = async function(e) {
+        e.preventDefault();
+        const emailOrUsername = document.getElementById("loginUsername").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const role = document.getElementById("loginRole").value;
+        const errorDiv = document.getElementById("loginError");
+        errorDiv.textContent = "";
 
-  try {
-    // Cho phép đăng nhập bằng email
-    const userCredential = await signInWithEmailAndPassword(auth, emailOrUsername, password);
-    const user = userCredential.user;
+        try {
+          // Cho phép đăng nhập bằng email
+          const userCredential = await signInWithEmailAndPassword(auth, emailOrUsername, password);
+          const user = userCredential.user;
 
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (!userDoc.exists()) throw new Error("Không tìm thấy tài khoản.");
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (!userDoc.exists()) throw new Error("Không tìm thấy tài khoản.");
 
-    const userData = userDoc.data();
-    if (userData.role !== role) {
-      throw new Error("Sai chức vụ.");
-    }
+          const userData = userDoc.data();
+          if (userData.role !== role) {
+            throw new Error("Sai chức vụ.");
+          }
 
-    // Lưu thông tin user vào biến toàn cục
-    window.currentUser = userData;
-    document.getElementById("loginBtn").style.display = "none";
-    document.getElementById("registerBtn").style.display = "none";
-    document.getElementById("userProfile").style.display = "flex";
-    document.getElementById("userFullname").innerText = userData.username;
-    showUserProfile();
+          // Lưu thông tin user vào biến toàn cục
+          window.currentUser = userData;
+          document.getElementById("loginBtn").style.display = "none";
+          document.getElementById("registerBtn").style.display = "none";
+          document.getElementById("userProfile").style.display = "flex";
+          document.getElementById("userFullname").innerText = userData.username;
+          showUserProfile();
 
-    closePopup();
-  } catch (error) {
-    errorDiv.textContent = "Đăng nhập thất bại: " + error.message;
-  }
-};
+          closePopup();
+        } catch (error) {
+          errorDiv.textContent = "Đăng nhập thất bại: " + error.message;
+        }
+      };
 
-// Đăng xuất
-window.logoutUser = async function() {
-  await signOut(auth);
-  window.currentUser = null;
-  document.getElementById("loginBtn").style.display = "";
-  document.getElementById("registerBtn").style.display = "";
-  document.getElementById("userProfile").style.display = "none";
-};
+      // Đăng xuất
+      window.logoutUser = async function() {
+        await signOut(auth);
+        window.currentUser = null;
+        document.getElementById("loginBtn").style.display = "";
+        document.getElementById("registerBtn").style.display = "";
+        document.getElementById("userProfile").style.display = "none";
+      };
     </script>
 </body>
 </html>
