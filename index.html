@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heromi - Trang học liệu miễn phí</title>
+    <link rel="icon" type="image/x-icon" href="/assets/heromi.ico" >
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Add navbar so JS/CSS can show/hide it -->
+    <header class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+        <div class="brand-title">Heromi</div>
+        <nav class="navbar-links" id="navbarLinks" aria-hidden="true">
+            <ul>
+                <li><a href="#" onclick="showSection('bai-tap')">Bài tập</a></li>
+                <li><a href="#" onclick="showSection('de-thi')">Đề thi</a></li>
+                <li><a href="#" onclick="showSection('ngan-hang-cau-hoi')">Ngân hàng câu hỏi</a></li>
+                <li><a href="#" onclick="showSection('de-xuat-tinh-nang')">Đề xuất</a></li>
+                <li><a href="#" onclick="showSection('setting')">Cài đặt</a></li>
+            </ul>
+        </nav>
+        <button class="toggle-button" id="navbarToggle" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </header>
+
+    <!-- Nút mở sidebar (menu 3 gạch) -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Mở menu">&#9776;</button>
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebaOverlay"></div>
+        <!-- Sidebar popup -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header" style="display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid #ccc;">
+            <div style="display:flex; align-items:center;">
+                <div class="sidebar-logo" style="background: linear-gradient(135deg, #2a5298 100%, #2a5298 100%); border-radius: 50%; box-shadow: 0 2px 8px #1e3c7233; margin-right: 12px;">
+                    <img src="/assets/logo.png" alt="Heromi" style="width:44px;height:44px;border-radius:50%;background:transparent;box-shadow:none;">
+                </div>
+                <span class="sidebar-title" style="font-weight:600; font-size:1.2rem; color:#ffffff;">Heromi</span>
+            </div>
+        </div>
+        <ul class="sidebar-menu" style="list-style:none; padding:0; margin:0;">
+            <li class="nav-item active" data-section="bai-tap" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_baitap">Bài tập</span>
+            </li>
+            <li class="nav-item" data-section="de-thi" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_dethi">Đề thi</span>
+            </li>
+            <li class="nav-item" data-section="ngan-hang-cau-hoi" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_nganhang">Ngân hàng câu hỏi</span>
+            </li>
+            <li class="nav-item" data-section="de-xuat-tinh-nang" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_dexuat">Đề xuất tính năng</span>
+            </li>
+            <li class="nav-item" data-section="setting" style="padding: 12px 20px; cursor:pointer; transition: background-color 0.3s;">
+                <span class="nav-label" data-i18n="sidebar_setting">Cài đặt</span>
+            </li>
+        </ul>
+    </nav>
+    
+    
+    <!-- Page Sections -->
+    <section id="dashboard" class="page-section">
+        <div class="container">
+            <div class="main-content">
+                <!-- Header -->
+                <div class="header">
+                    <div class="header-left">
+                        <h1 id="mainTitle" data-i18n="dashboard_title">Trang chủ</h1>
+                    </div>
+                    <div class="header-right">
+                        <a href="#" class="btn btn-primary" id="loginBtn" data-i18n="loginBtn">Đăng nhập</a>
+                        <a href="#" class="btn btn-secondary" id="registerBtn" data-i18n="registerBtn">Đăng ký</a>
+                        <div class="user-profile" style="display:none" id="userProfile">
+                            <div class="user-avatar" id="userAvatar">H</div>
+                            <div class="user-info" id="userInfo">
+                                <!-- Thông tin user sẽ được thêm động -->
+                            </div>
+                            <div class="user-fullname" id="userFullname"></div>
+                            <div class="user-history" id="userHistory"></div>
+                            <button onclick="logoutUser()" class="btn btn-secondary" style="margin-left:10px">Đăng xuất</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid" id="dashboardGrid">
+                    <div class="card" onclick="navigateToSection('bai-tap')">
+                        <div class="card-icon">📝</div>
+                        <h3 data-i18n="card_baitap_title">Bài tập</h3>
+                        <p data-i18n="card_baitap_desc">Quản lý và tạo bài tập cho học sinh</p>
+                        <!-- Form upload chỉ cho giáo viên, ẩn mặc định, hiển thị bằng JS nếu đúng quyền -->
+                        <form id="baitapUploadForm" style="display:none; margin-top:18px;">
+                            <input type="file" id="baitapFile" accept=".pdf,.doc,.docx" style="margin-bottom:8px;">
+                            <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên bài tập</button>
+                        </form>
+                    </div>
+                    <div class="card" onclick="navigateToSection('de-thi')">
+                        <div class="card-icon">📋</div>
+                        <h3 data-i18n="card_dethi_title">Đề thi</h3>
+                        <p data-i18n="card_dethi_desc">Tạo và quản lý đề thi, kiểm tra</p>
+                        <!-- Form upload chỉ cho giáo viên, ẩn mặc định, hiển thị bằng JS nếu đúng quyền -->
+                        <form id="dethiUploadForm" style="display:none; margin-top:18px;">
+                            <input type="file" id="dethiFile" accept=".pdf,.doc,.docx" style="margin-bottom:8px;">
+                            <button type="submit" class="btn btn-primary" style="width:auto;">Tải lên đề thi</button>
+                        </form>
+                    </div>
+                    <div class="card" onclick="navigateToSection('ngan-hang-cau-hoi')">
+                        <div class="card-icon">🏛️</div>
+                        <h3 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h3>
+                        <p data-i18n="card_nganhang_desc">Bộ sưu tập câu hỏi theo chủ đề</p>
+                    </div>
+                    <div class="card" onclick="navigateToSection('de-xuat-tinh-nang')">
+                        <div class="card-icon">✨</div>
+                        <h3 data-i18n="card_dexuat_title">Đề xuất tính năng</h3>
+                        <p data-i18n="card_dexuat_desc">Gợi ý tính năng mới cho hệ thống</p>
+                        <div class="vip-badge" data-i18n="vip_badge">VIP</div>
+                    </div>
+                </div>
+                <!-- Giao diện từng mục chức năng -->
+                <div class="section-content" id="section-bai-tap" style="display:none">
+                    <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                    <h2 data-i18n="card_baitap_title">Bài tập</h2>
+                    <div style="margin-bottom:20px;">
+                        <button class="btn btn-primary upload-btn" onclick="showUploadForm('baitap')" style="display:none;">
+                            <span style="font-size:20px;">+</span> Tải lên bài tập mới
+                        </button>
+                    </div>
+                    <div id="baitapUploadArea" class="upload-form" style="display:none;background:rgba(30,60,114,0.9);padding:20px;border-radius:12px;margin-bottom:20px;">
+                        <h3 style="color:#fff;margin-bottom:15px;">Tải lên bài tập mới</h3>
+                        <form id="baitapUploadForm" onsubmit="return handleBaiTapUpload(event)">
+                            <div style="margin-bottom:15px;">
+                                <input type="file" id="baitapFile" accept=".pdf,.doc,.docx" style="background:#fff;padding:8px;border-radius:6px;width:100%;">
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <input type="text" placeholder="Tiêu đề bài tập" style="width:100%;padding:8px;border-radius:6px;">
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <textarea placeholder="Mô tả bài tập" style="width:100%;padding:8px;border-radius:6px;min-height:80px;"></textarea>
+                            </button>
+                            <button type="submit" class="btn btn-primary">Tải lên</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideUploadForm('baitap')" style="margin-left:10px;">Hủy</button>
+                        </form>
+                    </div>
+                    <div id="baitapList">
+                        <!-- Danh sách bài tập sẽ được thêm vào đây -->
+                    </div>
+                </div>
+                <div class="section-content" id="section-de-thi" style="display:none">
+                    <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                    <h2 data-i18n="card_dethi_title">Đề thi</h2>
+                    <div style="margin-bottom:20px;">
+                        <button class="btn btn-primary upload-btn" onclick="showUploadForm('dethi')" style="display:none;">
+                            <span style="font-size:20px;">+</span> Tải lên đề thi mới
+                        </button>
+                    </div>
+                    <div id="dethiUploadArea" class="upload-form" style="display:none;background:rgba(30,60,114,0.9);padding:20px;border-radius:12px;margin-bottom:20px;">
+                        <h3 style="color:#fff;margin-bottom:15px;">Tải lên đề thi mới</h3>
+                        <form id="dethiUploadForm" onsubmit="return handleDeThiUpload(event)">
+                            <div style="margin-bottom:15px;">
+                                <input type="file" id="dethiFile" accept=".pdf,.doc,.docx" style="background:#fff;padding:8px;border-radius:6px;width:100%;">
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <input type="text" placeholder="Tiêu đề đề thi" style="width:100%;padding:8px;border-radius:6px;">
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <textarea placeholder="Mô tả đề thi" style="width:100%;padding:8px;border-radius:6px;min-height:80px;"></textarea>
+                            </button>
+                            <button type="submit" class="btn btn-primary">Tải lên</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideUploadForm('dethi')" style="margin-left:10px;">Hủy</button>
+                        </form>
+                    </div>
+                    <div id="dethiList">
+                        <!-- Danh sách đề thi sẽ được thêm vào đây -->
+                    </div>
+                </div>
+                <div class="section-content" id="section-ngan-hang-cau-hoi" style="display:none">
+                    <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                    <h2 data-i18n="card_nganhang_title">Ngân hàng câu hỏi</h2>
+                    <!-- Nội dung ngân hàng câu hỏi -->
+                </div>
+                <div class="section-content" id="section-de-xuat-tinh-nang" style="display:none">
+                    <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                    <h2 data-i18n="card_dexuat_title">Đề xuất tính năng</h2>
+                    <!-- Nội dung đề xuất tính năng -->
+                </div>
+                <div class="section-content" id="section-setting" style="display:none">
+                    <button class="btn btn-secondary back-home-btn" style="margin-bottom:18px;">← Trở về trang chủ</button>
+                    <h2 data-i18n="sidebar_setting">Cài đặt</h2>
+                    <!-- Nội dung cài đặt -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="baitap" class="page-section" style="display:none">
+        <div class="container">
+            <h2>Bài Tập</h2>
+            <p>Đây là trang quản lý bài tập. Bạn có thể xem, tạo mới hoặc quản lý các bài tập tại đây.</p>
+            <!-- Thêm nội dung bài tập tại đây -->
+        </div>
+    </section>
+    
+    <section id="dethi" class="page-section" style="display:none">
+        <div class="container">
+            <h2>Đề Thi</h2>
+            <p>Đây là trang quản lý đề thi. Bạn có thể xem, tạo mới hoặc quản lý các đề thi tại đây.</p>
+            <!-- Thêm nội dung đề thi tại đây -->
+        </div>
+    </section>
+    
+    <!-- Popup Đăng nhập/Đăng ký -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup" id="loginPopup">
+            <button class="close-btn" onclick="closePopup()">&times;</button>
+            <div class="popup-header">
+                <div class="popup-icon">🔐</div>
+                <h2 data-i18n="login">Đăng nhập</h2>
+                <p class="popup-desc" data-i18n="loginDesc">Chào mừng bạn quay lại! Vui lòng đăng nhập để tiếp tục.</p>
+            </div>
+            <form id="loginForm" autocomplete="off" onsubmit="return handleLogin(event)">
+                <label for="loginUsername" data-i18n="username">Tên đăng nhập</label>
+                <input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập" required>
+                <label for="loginPassword" data-i18n="password">Mật khẩu</label>
+                <div class="input-password">
+                    <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                    <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</span>
+                </div>
+                <div class="error-msg" id="loginError"></div>
+                <button class="btn btn-primary" type="submit" data-i18n="loginBtn">Đăng nhập</button>
+            </form>
+            <div class="switch-link" data-i18n="noAccount">
+                Chưa có tài khoản? <a onclick="switchToRegister()" data-i18n="register">Đăng ký</a>
+            </div>
+        </div>
+        <div class="popup" id="registerPopup" style="display:none">
+            <button class="close-btn" onclick="closePopup()">&times;</button>
+            <div class="popup-header">
+                <div class="popup-icon">📝</div>
+                <h2 data-i18n="register">Đăng ký</h2>
+                <p class="popup-desc" data-i18n="registerDesc">Tạo tài khoản mới để sử dụng các tính năng của hệ thống.</p>
+            </div>
+            <form id="registerForm" autocomplete="off" onsubmit="return handleRegister(event)">
+                <label for="registerUsername" data-i18n="username">Tên đăng nhập</label>
+                <input type="text" id="registerUsername" placeholder="Nhập tên đăng nhập" required>
+                <label for="registerEmail" data-i18n="email">Email</label>
+                <input type="email" id="registerEmail" placeholder="Nhập email" required>
+                <label for="registerPassword" data-i18n="password">Mật khẩu</label>
+                <div class="input-password">
+                    <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required>
+                    <span class="toggle-password" onclick="togglePassword('registerPassword', this)">👁️</span>
+                </div>
+                <label for="registerPassword2" data-i18n="password2">Nhập lại mật khẩu</label>
+                <div class="input-password">
+                    <input type="password" id="registerPassword2" placeholder="Nhập lại mật khẩu" required>
+                    <span class="toggle-password" onclick="togglePassword('registerPassword2', this)">👁️</span>
+                </div>
+                <div class="error-msg" id="registerError"></div>
+                <button class="btn btn-secondary" type="submit" data-i18n="registerBtn">Đăng ký</button>
+            </form>
+            <div class="switch-link" data-i18n="haveAccount">
+                Đã có tài khoản? <a onclick="switchToLogin()" data-i18n="login">Đăng nhập</a>
+            </div>
+        </div>
+    </div> 
+    
+    <script src="main.js"></script>
+    <script src="baitap.js"></script>
+    <script src="dethi.js"></script>
+    <script src="qlhs.js"></script>
+    <script src="setting.js"></script>
+    <script src="nhch.js"></script>
+    <script src="js/nav.js"></script>
+    <script>
+    // Popup functions
+    function openPopup(popupId) {
+        document.getElementById('popupOverlay').style.display = 'flex';
+        document.getElementById(popupId).style.display = 'block';
+    }
+    
+    function closePopup() {
+        document.getElementById('popupOverlay').style.display = 'none';
+        document.getElementById('loginPopup').style.display = 'none';
+        document.getElementById('registerPopup').style.display = 'none';
+    }
+    
+    function switchToRegister() {
+        document.getElementById('loginPopup').style.display = 'none';
+        document.getElementById('registerPopup').style.display = 'block';
+    }
+    
+    function switchToLogin() {
+        document.getElementById('registerPopup').style.display = 'none';
+        document.getElementById('loginPopup').style.display = 'block';
+    }
+    
+    // Add event listeners to login/register buttons
+    document.getElementById('loginBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        openPopup('loginPopup');
+    });
+    
+    document.getElementById('registerBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        openPopup('registerPopup');
+    });
+
+    // Hiển thị form upload nếu là giáo viên
+    window.addEventListener('DOMContentLoaded', function () {
+        // Initialize sidebar
+        autoHideSidebarOnMobile();
+        window.addEventListener("resize", autoHideSidebarOnMobile);
+        
+        // Initialize popups
+        document.querySelectorAll('.back-home-btn').forEach(btn => {
+            btn.onclick = function() {
+                showSection('');
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            };
+        });
+        
+        // Check user role for upload forms
+        if (window.currentUser && window.currentUser.role === 'Giáo viên') {
+            document.getElementById('baitapUploadForm').style.display = '';
+            document.getElementById('dethiUploadForm').style.display = '';
+            document.getElementById('qlhsUploadForm').style.display = '';
+        }
+        
+        // Thêm sự kiện cho các nút điều hướng trang
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Xóa active class từ tất cả các nút
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                // Thêm active class cho nút được click
+                this.classList.add('active');
+                
+                // Ẩn tất cả các section
+                document.querySelectorAll('.page-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Hiển thị section tương ứng
+                const pageId = this.getAttribute('data-page');
+                document.getElementById(pageId).style.display = 'block';
+            });
+        });
+    });
+
+    // Khi đăng nhập thành công cũng cần kiểm tra lại
+    window.showUserProfile = (function (orig) {
+        return function () {
+            orig && orig();
+            if (window.currentUser && window.currentUser.role === 'Giáo viên') {
+                document.getElementById('baitapUploadForm').style.display = '';
+                document.getElementById('dethiUploadForm').style.display = '';
+                document.getElementById('qlhsUploadForm').style.display = '';
+            } else {
+                document.getElementById('baitapUploadForm').style.display = 'none';
+                document.getElementById('dethiUploadForm').style.display = 'none';
+                document.getElementById('qlhsUploadForm').style.display = 'none';
+            }
+        };
+    })(window.showUserProfile);
+    
+    // Ẩn/hiện giao diện từng mục chức năng
+    function showSection(section) {
+        // Ẩn dashboard grid
+        document.getElementById('dashboardGrid').style.display = section ? 'none' : '';
+        // Ẩn tất cả section-content
+        document.querySelectorAll('.section-content').forEach(el => el.style.display = 'none');
+        if (section) {
+            const el = document.getElementById('section-' + section);
+            if (el) el.style.display = '';
+        }
+    }
+    
+    // Gắn lại sự kiện cho sidebar/card
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const section = this.getAttribute('data-section');
+            showSection(section);
+        });
+    });
+    
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            const section = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+            showSection(section);
+        });
+    });
+    
+    // Khi load trang, hiển thị dashboard
+    showSection('');
+    
+    // Xử lý sự kiện cho nút toggle sidebar (dùng class, không dùng style trực tiếp)
+    function autoHideSidebarOnMobile() {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove("sidebar-open");
+            sidebarOverlay.classList.remove("active");
+        }
+    }
+
+    function openSidebarMobile() {
+        sidebar.classList.add("sidebar-open");
+        sidebarOverlay.classList.add("active");
+    }
+
+    function closeSidebarMobile() {
+        sidebar.classList.remove("sidebar-open");
+        sidebarOverlay.classList.remove("active");
+    }
+
+    // Toggle khi nhấn nút menu
+    sidebarToggleBtn.addEventListener("click", function () {
+        if (sidebar.classList.contains("sidebar-open")) {
+            closeSidebarMobile();
+        } else {
+            openSidebarMobile();
+        }
+    });
+
+    // Đóng khi bấm ra ngoài
+    sidebarOverlay.addEventListener("click", closeSidebarMobile);
+
+    // Đóng khi chọn menu (trên mobile)
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.addEventListener("click", function () {
+            if (window.innerWidth <= 768) closeSidebarMobile();
+        });
+    });
+    </script>
+    <script>
+    function showUploadForm(type) {
+        document.getElementById(type + 'UploadArea').style.display = 'block';
+        document.querySelector(`#section-${type} .upload-btn`).style.display = 'none';
+    }
+
+    function hideUploadForm(type) {
+        document.getElementById(type + 'UploadArea').style.display = 'none';
+        document.querySelector(`#section-${type} .upload-btn`).style.display = 'block';
+    }
+
+    // Show upload buttons for teachers
+    function updateUploadButtons() {
+        // Chỉ kiểm tra người dùng đã đăng nhập, không cần kiểm tra role
+        const isLoggedIn = window.currentUser != null;
+        document.querySelectorAll('.upload-btn').forEach(btn => {
+            btn.style.display = isLoggedIn ? 'block' : 'none';
+        });
+    }
+
+    // Update on page load and login/logout
+    document.addEventListener('DOMContentLoaded', updateUploadButtons);
+    if (typeof window.showUserProfile === 'function') {
+        const orig = window.showUserProfile;
+        window.showUserProfile = function() {
+            orig();
+            updateUploadButtons();
+        };
+    }
+    </script>
+    <script>
+function togglePassword(inputId, toggler) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggler.textContent = '🔒'; // Icon khi hiện mật khẩu
+        toggler.style.color = '#00d4ff'; // Màu khi đang hiện
+    } else {
+        input.type = 'password';
+        toggler.textContent = '👁️'; // Icon khi ẩn mật khẩu
+        toggler.style.color = '#888'; // Màu mặc định
+    }
+}
+</script>
+</body>
+</html>
